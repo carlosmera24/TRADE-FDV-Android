@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_fuec_registro"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="0dp"
+    android:background="@drawable/background_route_gray"
+    tools:context="co.com.puli.trade.fdv.actividades.FUEC_RegistroActivity">
+
+    <!-- Toolbar como Action bar -->
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_action_bar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_gravity="center_vertical">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etEmpresa"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_empresa_contratante"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="textPersonName" />
+            <Spinner
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etObjeto"
+                android:background="@drawable/spinner_formularios"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:layout_gravity="center"
+                android:paddingEnd="30dp"
+                android:entries="@array/array_objeto_contrato"
+                android:spinnerMode="dialog" />
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etOrigenRecorrido"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_origen_recorrido"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="text" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etDestinoRecorrido"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_destino_recorrido"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="text" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etPlaca"
+                android:layout_gravity="center_horizontal"
+                android:inputType="text"
+                android:hint="@string/txt_placa_vehiculo"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etNombreRes"
+                android:layout_gravity="center_horizontal"
+                android:inputType="textPersonName"
+                android:hint="@string/txt_nombre_responsable"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etDir"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_direccion"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="textPostalAddress" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etTel"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_telefono"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="phone" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etNit"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_nit_empresa_contratante"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="text" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etCcResponsable"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_cc_responsable"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="text" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etFchIniServicio"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_fecha_inicio_servicio"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="date" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etFchFinServicio"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_fecha_fin_servicio"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="date" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etCel"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_celular"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="phone" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etEmail"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_email"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="textEmailAddress" />
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:id="@+id/etValor"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/txt_valor_servicio"
+                android:background="@drawable/et_login"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="#FFF"
+                android:textColorHint="#CCC"
+                android:inputType="text" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="38dp"
+                    android:text="@string/txt_guardar"
+                    android:id="@+id/btGuardar"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bt_ingreso"
+                    android:textSize="20sp"
+                    android:textAllCaps="true"
+                    android:textColor="#ed9300"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:layout_marginRight="5dp"
+                    tools:ignore="ButtonStyle,RtlHardcoded" />
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="38dp"
+                    android:text="@string/txt_cancelar"
+                    android:id="@+id/btCancelar"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bt_ingreso"
+                    android:textSize="20sp"
+                    android:textAllCaps="true"
+                    android:textColor="#ed9300"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    tools:ignore="ButtonStyle,RtlHardcoded" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

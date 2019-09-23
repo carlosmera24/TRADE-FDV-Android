@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Boton presionado -->
+    <item android:state_pressed="true">
+        <layer-list>
+            <item>
+                <shape>
+                    <solid android:color="#f9cc3d"/>
+                </shape>
+            </item>
+            <item android:top="5dp">
+                <bitmap
+                    android:src="@drawable/ic_edit_list"
+                    android:gravity="top|center_horizontal"
+                    />
+            </item>
+        </layer-list>
+    </item>
+    <!-- Boton por defecto -->
+    <item>
+        <layer-list>
+            <item>
+                <shape>
+                    <solid android:color="#f9cc3d"/>
+                </shape>
+            </item>
+            <item>
+                <bitmap
+                    android:src="@drawable/ic_edit_list"
+                    android:gravity="center"
+                    />
+            </item>
+        </layer-list>
+    </item>
+
+</selector>

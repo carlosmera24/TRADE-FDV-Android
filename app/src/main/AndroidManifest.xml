@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="co.com.puli.trade.fdv">
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission
+        android:name="com.viajesnuevacolombia.padres.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission
+        android:name="android.permission.CALL_PRIVILEGED"
+        android:protectionLevel="signature|privileged"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!--
+        * Definir GlobalParametrosGenerales para uso de variables globales
+        Llamar en cualquier actividad como (GlobalParametrosGenerales) getApplicationContext()
+        para acceder a sus metodos o recursos.
+        * Impresindible registrar en cada nueva actividad a si misma como actividad en ejecución:
+            GlobalParametrosGenerarles.setActividadActual( this );
+        Preferiblemente en onResume()
+    -->
+    <application
+        android:name=".clases.GlobalParametrosGenerales"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="co.com.puli.trade.fdv.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- Broadcast receiver para GCM -->
+        <receiver
+            android:name=".clases.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
+                <category android:name="com.viajesnuevacolombia.padres" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".clases.GcmIntentService" />
+        <service android:name=".clases.GPSServices" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".actividades.SplashActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".actividades.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.PrincipalActivity"
+            android:label=""
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.MensajesActivity"
+            android:label="MENSAJES"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.AlertasActivity"
+            android:label="ALERTAS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.ChatActivity"
+            android:label="CHAT"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.ChatUsuariosActivity"
+            android:label="CHAT USUARIOS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.RegistroActivity"
+            android:label="REGISTRO"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.CambiarPasswordActivity"
+            android:label="ACTUALIZAR CONTRASEÑA"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.PausaActivaActivity"
+            android:label="PAUSA ACTIVA"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.FUEC_RegistroActivity"
+            android:label="SOLICITUD FUEC"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.AgendamientoActivity"
+            android:label="AGENDAMIENTO"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.ControlPDVActivity"
+            android:label="CONTROL PDV"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.NuevoPDVActivity"
+            android:label="NUEVO PDV"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.NuevoPedidoActivity"
+            android:label="PEDIDOS PDV"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.ListadoConcursosActivity"
+            android:label="CONCURSOS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.ConcursoActivity"
+            android:label="CONCURSO"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.PuntoOportunidadActivity"
+            android:label="PUNTO DE OPORTUNIDAD"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.MisPedidosActivity"
+            android:label="MIS PEDIDOS"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".actividades.DetallePedidoActivity"
+            android:label="DETALLE PEDIDO"
+            android:screenOrientation="portrait" />
+        <activity android:name=".actividades.NotificacionesActivity"
+            android:label="NOTIFICACIONES"
+            android:screenOrientation="portrait" />
+    </application>
+
+</manifest>

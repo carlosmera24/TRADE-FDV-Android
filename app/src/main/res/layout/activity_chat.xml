@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="co.com.puli.trade.fdv.actividades.ChatActivity"
+    android:orientation="vertical"
+    android:background="#FFF"
+    android:focusableInTouchMode="true">
+
+    <!-- Toolbar como Action bar -->
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_action_bar"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvTitulo"
+        android:background="@drawable/background_white_border_bottom"
+        android:padding="15dp"
+        android:textSize="18sp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/lvChat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:background="@drawable/background_white_border_bottom" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="42dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnSeleccionarMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:layout_margin="5dp"
+            android:background="#FFF"
+            android:contentDescription="@string/txt_descripcion_imagen_btn_enviar"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_add_circle"
+            tools:ignore="DuplicateIds" />
+
+        <EditText
+            android:id="@+id/etMensaje"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:hint="@string/txt_mensaje"
+            android:imeOptions="actionSend"
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLines="4"
+            android:scrollbars="vertical"
+            android:textColor="#000" />
+
+        <ImageButton
+            android:id="@+id/ibEnviar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:layout_margin="5dp"
+            android:background="#FFF"
+            android:contentDescription="@string/txt_descripcion_imagen_btn_enviar"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_btn_send" />
+
+    </LinearLayout>
+
+</LinearLayout>

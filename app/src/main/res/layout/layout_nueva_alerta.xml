@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_nueva_alerta"
+        android:id="@+id/tvTituloAlerta"
+        android:background="#f9cc3d"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:gravity="center_vertical|center_horizontal"
+        android:padding="10dp" />
+
+    <Spinner
+        android:id="@+id/spAlert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:background="@drawable/background_spinner"
+        android:paddingRight="20dp"
+        tools:ignore="RtlSymmetry" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_publicar"
+            android:id="@+id/btGuardar"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/bt_naranja"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/black"
+            tools:ignore="ButtonStyle,RtlHardcoded" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btCancelar"
+            android:text="@string/txt_cancelar"
+            android:background="@drawable/bt_naranja"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black"
+            tools:ignore="ButtonStyle,RtlHardcoded" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Boton presionado -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="#038a3c"  />
+            <stroke android:color="#00ffdc00"
+                android:width="4dp"  />
+        </shape>
+    </item>
+    <!-- Default background -->
+    <item>
+        <shape>
+            <solid android:color="#04a247" />
+        </shape>
+    </item>
+
+</selector>

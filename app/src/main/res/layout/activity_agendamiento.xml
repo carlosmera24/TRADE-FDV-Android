@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_preruta"
+    tools:context="co.com.puli.trade.fdv.actividades.AgendamientoActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFF">
+
+    <!-- Toolbar como Action bar -->
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_action_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        tools:ignore="RtlHardcoded">
+
+        <EditText
+            android:id="@+id/etFecha"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="2"
+            android:ems="10"
+            android:focusable="false"
+            android:hint="@string/txt_fecha_placeholder"
+            android:inputType="date" />
+
+        <ImageButton
+            android:id="@+id/ibCalendar"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="15dp"
+            android:background="#FFF"
+            app:srcCompat="@drawable/ic_calendar" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        tools:ignore="RtlHardcoded">
+
+        <Spinner
+            android:id="@+id/spZona"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="2"
+            android:background="@drawable/background_spinner"
+            android:paddingRight="20dp"
+            tools:ignore="RtlSymmetry" />
+
+        <Button
+            android:id="@+id/btFiltrar"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/bt_naranja"
+            android:padding="10dp"
+            android:text="@string/txt_filtrar"
+            android:textColor="@color/black"
+            tools:ignore="RtlHardcoded" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        tools:ignore="RtlHardcoded">
+
+        <TextView
+            android:id="@+id/tvTituloPDV"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:paddingRight="10dp"
+            android:text="@string/txt_punto_venta"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvTituloVisitar"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/txt_visitar"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lvListaPDV"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_weight="4"
+        android:background="#FFF" />
+
+    <Button
+        android:id="@+id/btGuardar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bt_naranja"
+        android:padding="10dp"
+        android:text="@string/txt_guardar"
+        android:textColor="@color/black"
+        tools:ignore="RtlHardcoded" />
+
+</LinearLayout>

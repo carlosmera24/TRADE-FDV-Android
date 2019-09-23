@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_material_light"
+        android:gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        tools:ignore="PrivateResource">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/civImageUsuario"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#FFFFFFAA"
+            android:scaleType="centerCrop"
+            android:src="@drawable/oval_header_navigation_view"
+            android:layout_marginRight="10dp"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/tvNameUser"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:clickable="true"
+        android:background="@drawable/background_white_border_bottom">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView2"
+            android:contentDescription="@string/txt_descripcion_imagen_ruta"
+            android:layout_marginRight="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_menu_drawer_empresa"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_label_empresa"
+            android:id="@+id/tvLabelRuta"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:typeface="sans"
+            android:layout_marginRight="5dp"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvEmpresa"
+            android:textColor="#f4bc17"
+            android:textSize="18sp"
+            android:paddingRight="10dp"
+            android:text=""
+            tools:ignore="RtlHardcoded,RtlSymmetry" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:isScrollContainer="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:clickable="true"
+                android:background="@drawable/background_item_menu_drawer"
+                android:id="@+id/lItemNotificaciones"
+                android:onClick="onClickItemDrawerMenu">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="0.3">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/imageView3"
+                        android:contentDescription="@string/txt_descripcion_imagen_ruta"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_menu_drawer_notificacion" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/txt_number_cero"
+                        android:id="@+id/textView2"
+                        android:background="@color/primary_material_light"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:textColor="#FFF"
+                        android:textSize="8sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginRight="4dp"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp" />
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_notificaciones"
+                    android:id="@+id/tvLabelNotificacion"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:typeface="sans"
+                    android:layout_weight="2"
+                    android:layout_marginRight="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:clickable="true"
+                android:background="@drawable/background_item_menu_drawer"
+                android:id="@+id/lItemMensajes"
+                android:onClick="onClickItemDrawerMenu">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="0.3"
+                    tools:ignore="RtlHardcoded">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/imageView4"
+                        android:contentDescription="@string/txt_descripcion_imagen_ruta"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_menu_drawer_mensajes" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/txt_number_cero"
+                        android:id="@+id/textVoew5"
+                        android:background="@color/primary_material_light"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:textColor="#FFF"
+                        android:textSize="8sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginRight="4dp"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        tools:ignore="PrivateResource,RelativeOverlap,SmallSp" />
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_mensajes"
+                    android:id="@+id/tvLabelMensajes"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:typeface="sans"
+                    android:layout_weight="2"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:clickable="true"
+                android:background="@drawable/background_item_menu_drawer"
+                android:id="@+id/lItemAlertas"
+                android:onClick="onClickItemDrawerMenu">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="0.3"
+                    tools:ignore="RtlHardcoded">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/imageView5"
+                        android:contentDescription="@string/txt_descripcion_imagen_ruta"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_menu_drawer_alertas" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/txt_number_cero"
+                        android:id="@+id/textView"
+                        android:background="@color/primary_material_light"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:textColor="#FFF"
+                        android:textSize="8sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginRight="4dp"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"
+                        tools:ignore="PrivateResource,RelativeOverlap,SmallSp" />
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_alertas"
+                    android:id="@+id/tvLabelAlertas"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:typeface="sans"
+                    android:layout_weight="2"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:clickable="true"
+                android:background="@drawable/background_item_menu_drawer"
+                android:id="@+id/lItemChat"
+                android:onClick="onClickItemDrawerMenu">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView6"
+                    android:contentDescription="@string/txt_descripcion_imagen_ruta"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_menu_drawer_chat"
+                    android:layout_weight="0.3"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_chat"
+                    android:id="@+id/tvLabelChat"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:typeface="sans"
+                    android:layout_weight="2"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:clickable="true"
+                android:background="@drawable/background_item_menu_drawer"
+                android:id="@+id/lItemControlPDV"
+                android:onClick="onClickItemDrawerMenu">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView9"
+                    android:contentDescription="@string/txt_descripcion_imagen_ruta"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_menu_drawer_control_pdv"
+                    android:layout_weight="0.3"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_control_pdv"
+                    android:id="@+id/tvLabelControlPDV"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:typeface="sans"
+                    android:layout_weight="2"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:clickable="true"
+                android:background="@drawable/background_item_menu_drawer"
+                android:id="@+id/lItemAgendamiento"
+                android:onClick="onClickItemDrawerMenu">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView10"
+                    android:contentDescription="@string/txt_descripcion_imagen_ruta"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_menu_drawer_preruta"
+                    android:layout_weight="0.3"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_agendamiento"
+                    android:id="@+id/tvLabelAgendamiento"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:typeface="sans"
+                    android:layout_weight="2"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:clickable="true"
+                android:background="@drawable/background_item_menu_drawer"
+                android:id="@+id/lItemConcurso"
+                android:onClick="onClickItemDrawerMenu">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView11"
+                    android:contentDescription="@string/txt_descripcion_imagen_ruta"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_menu_drawer_concursos"
+                    android:layout_weight="0.3"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_concursos"
+                    android:id="@+id/tvLabelConcurso"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:typeface="sans"
+                    android:layout_weight="2"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:clickable="true"
+                android:background="@drawable/background_item_menu_drawer"
+                android:id="@+id/lItemLogout"
+                android:onClick="onClickItemDrawerMenu">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView7"
+                    android:contentDescription="@string/txt_descripcion_imagen_ruta"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_menu_drawer_logout"
+                    android:layout_weight="0.3"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_cerrar_sesion"
+                    android:id="@+id/tvLabelLogout"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:typeface="sans"
+                    android:layout_weight="2"
+                    android:layout_marginRight="10dp"
+                    tools:ignore="RtlHardcoded" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="New Text"
+        android:id="@+id/tvNombreAlumno"
+        android:gravity="left|center_vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:padding="5dp"
+        android:layout_toLeftOf="@+id/linearLayout"
+        android:layout_toStartOf="@+id/linearLayout" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:foregroundGravity="right"
+        android:gravity="center_vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/linearLayout"
+        android:layout_marginRight="2dp">
+
+        <Button
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_in"
+            android:id="@+id/btCheckIn"
+            android:textColor="#FFF"
+            android:background="@color/btn_in"
+            android:layout_margin="2dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp" />
+
+        <Button
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_out"
+            android:id="@+id/btCheckOut"
+            android:background="@color/btn_out"
+            android:textColor="#FFF"
+            android:layout_margin="2dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp" />
+
+        <Button
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_x"
+            android:id="@+id/btNoRuta"
+            android:singleLine="false"
+            android:background="@color/btn_aus"
+            android:layout_margin="2dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp" />
+        <Button
+            android:layout_width="31dp"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_nov"
+            android:id="@+id/btNovedad"
+            android:singleLine="false"
+            android:background="@color/btn_novedad"
+            android:layout_margin="2dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp" />
+    </LinearLayout>
+
+</RelativeLayout>

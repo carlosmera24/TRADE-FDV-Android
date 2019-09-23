@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".actividades.NotificacionesActivity"
+    android:orientation="vertical"
+    android:background="#FFF">
+
+    <!-- Toolbar como Action bar -->
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_action_bar"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_titulo_notificaciones"
+        android:id="@+id/tvTitulo"
+        android:background="@drawable/background_white_border_bottom"
+        android:padding="15dp"
+        android:textSize="18sp" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lvNotificaciones"
+        android:background="#FFF"
+        android:layout_marginTop="10dp" />
+
+</LinearLayout>

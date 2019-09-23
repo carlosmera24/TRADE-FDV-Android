@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <!-- Color solido de fondo-->
+            <solid android:color="#64FFFFFF" />
+            <!-- Borde-->
+            <stroke
+                android:color="#80ffc900"
+                android:width="4dp" />
+            <!-- Esquinas -->
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+    <item android:right="15dp">
+        <bitmap android:src="@drawable/ic_arrow_spiner"
+            android:gravity="center|right"
+            android:tileMode="disabled" />
+    </item>
+
+</layer-list>

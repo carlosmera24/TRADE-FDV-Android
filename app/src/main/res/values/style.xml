@@ -1,0 +1,40 @@
+<resources>
+    <!--ToolBar/ActionBar-->
+    <style name="actionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!--<item name="android:background">@drawable/background_action_bar</item>-->
+        <!--<item name="background">@drawable/background_action_bar</item>-->
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
+
+        <!--<item name="android:logo">@drawable/background_action_bar</item>-->
+        <!--<item name="logo">@drawable/background_action_bar</item>-->
+        <!--<item name="homeAsUpIndicator">@drawable/ic_boton_home</item>-->
+        <!--<item name="displayOptions">useLogo|showHome|homeAsUp</item>-->
+    </style>
+
+    <!-- Base application theme. -->
+    <!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:actionBarStyle">@style/actionBar</item>
+        <item name="actionBarStyle">@style/actionBar</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorForeground">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="alertDialogTheme">@style/AppCompatAlertDialogStyle</item>
+        <item name="android:alertDialogTheme">@style/AppCompatAlertDialogStyle</item>
+    </style>
+
+    <!--AlertDialog-->
+    <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="colorPrimary">@color/white</item>
+
+        <!-- Eliminar borde blanco de la ventana -->
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:background">@color/transparent</item>
+    </style>
+
+</resources>

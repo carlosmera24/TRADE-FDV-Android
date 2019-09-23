@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:background="#FFF"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_seleccionar_multimedia"
+        android:id="@+id/tvTituloAlerta"
+        android:background="#f9cc3d"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:gravity="center_vertical|center_horizontal"
+        android:padding="10dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="240dp">
+
+        <ImageButton
+            app:srcCompat="@drawable/ic_picture_gallery"
+            android:id="@+id/ibGaleria"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/txt_descripcion_logo"
+            android:layout_width="160dp"
+            android:layout_height="120dp" />
+
+        <ImageButton
+            app:srcCompat="@drawable/ic_photo_camera"
+            android:id="@+id/ibCamara"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/txt_descripcion_logo"
+            android:layout_width="160dp"
+            android:layout_height="120dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btCancelar"
+        android:text="@string/txt_cancelar"
+        android:background="@drawable/bt_naranja"
+        android:textColor="@color/black"
+        tools:ignore="RtlHardcoded"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp" />
+
+</LinearLayout>

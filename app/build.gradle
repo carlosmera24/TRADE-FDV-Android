@@ -1,0 +1,46 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        vnc_intuitiva {
+            keyAlias 'keyVncIntuitiva'
+            keyPassword 'iNTui7Iv4'
+            storeFile file('/home/Datos/Proyectos/AndroidStudio/cert_vnc.jks')
+            storePassword 'iNTui7Iv4'
+        }
+    }
+    compileSdkVersion 27
+    buildToolsVersion '28.0.0 rc1'
+    defaultConfig {
+        applicationId 'co.com.puli.trade.fdv'
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 3
+        versionName '1.0'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable false
+            jniDebuggable false
+            signingConfig signingConfigs.vnc_intuitiva
+        }
+    }
+    sourceSets { main { java.srcDirs = ['src/main/java', 'src/main/java/clases'] } }
+    useLibrary 'org.apache.http.legacy'
+    productFlavors {
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    api 'de.hdodenhof:circleimageview:2.0.0'
+    api 'com.android.support.constraint:constraint-layout:1.1.2'
+    api 'com.android.support:design:27.1.1'
+    api 'com.android.support:appcompat-v7:27.1.1'
+    api 'com.android.support:support-v4:27.1.1'
+    api 'com.mousebirdconsulting.maply:Android:2.5'
+//    api 'com.google.android.gms:play-services-gcm:11.0.4'
+    api 'com.google.android.gms:play-services-gcm:15.0.1'
+}

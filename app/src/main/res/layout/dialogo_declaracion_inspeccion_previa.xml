@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_inspeccion_previa"
+        android:id="@+id/tvTitulo"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:padding="5dp"
+        android:textAllCaps="true"
+        android:background="#f9cc3d"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="HardcodedText"
+            android:id="@+id/tvMsgDecla"
+            android:padding="10dp"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp" />
+
+        <Switch
+            android:text="@string/txt_acepto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/swDeclaracion"
+            tools:ignore="HardcodedText"
+            android:layout_margin="10dp"
+            android:textSize="18sp"
+            android:layout_marginBottom="10dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="40dp"
+        android:layout_marginBottom="10dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_continuar"
+            android:id="@+id/btContinuar"
+            android:background="@drawable/bt_naranja"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/black"
+            tools:ignore="ButtonStyle,RtlHardcoded" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btCancelar"
+            android:text="@string/txt_cancelar"
+            android:background="@drawable/bt_naranja"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black"
+            tools:ignore="ButtonStyle,RtlHardcoded" />
+    </LinearLayout>
+
+</LinearLayout>

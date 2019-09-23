@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Boton presionado -->
+    <item android:state_pressed="true">
+        <layer-list>
+            <item
+                android:top="2dp"
+                android:bottom="2dp"
+                android:left="2dp"
+                android:right="2dp"
+                >
+                <bitmap android:src="@drawable/ic_btn_agregar_alerta" />
+            </item>
+        </layer-list>
+    </item>
+    <!-- Boton por defecto -->
+    <item>
+        <layer-list>
+            <item>
+                <bitmap android:src="@drawable/ic_btn_agregar_alerta" />
+            </item>
+        </layer-list>
+    </item>
+
+</selector>

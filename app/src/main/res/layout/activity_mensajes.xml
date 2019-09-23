@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="co.com.puli.trade.fdv.actividades.MensajesActivity"
+    android:orientation="vertical"
+    android:background="#FFF">
+
+    <!-- Toolbar como Action bar -->
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_action_bar"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_titulo_mensajes"
+        android:id="@+id/tvTitulo"
+        android:background="@drawable/background_white_border_bottom"
+        android:padding="15dp"
+        android:textSize="18sp" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lvMensajes"
+        android:background="#FFF"
+        android:layout_marginTop="10dp" />
+
+</LinearLayout>

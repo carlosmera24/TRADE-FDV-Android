@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".actividades.ControlPDVActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFF">
+
+    <!-- Toolbar como Action bar -->
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_action_bar"/>
+
+    <LinearLayout
+        android:id="@+id/lItemAgregarPDV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/background_item_menu_drawer"
+        android:clickable="true"
+        android:onClick="onClickItemDrawerMenu"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.3"
+            android:contentDescription="@string/txt_descripcion_imagen_ruta"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_menu_drawer_agregar_control_pdv"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/tvLabelAgregarPDV"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:text="@string/txt_agregar_pdv"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:typeface="sans"
+            tools:ignore="RtlHardcoded" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lItemPuntoOportunidad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/background_item_menu_drawer"
+        android:clickable="true"
+        android:onClick="onClickItemDrawerMenu"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.3"
+            android:contentDescription="@string/txt_descripcion_imagen_ruta"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_menu_drawer_punto_oportunidad"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/tvLabelPuntoOportunidad"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:text="@string/txt_punto_de_oportunidad"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:typeface="sans"
+            tools:ignore="RtlHardcoded" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lItemNuevoPedido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/background_item_menu_drawer"
+        android:clickable="true"
+        android:onClick="onClickItemDrawerMenu"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.3"
+            android:contentDescription="@string/txt_descripcion_imagen_ruta"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_menu_drawer_agregar_pedido"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/tvLabelNuevoPedido"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:text="@string/txt_nuevo_pedido"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:typeface="sans"
+            tools:ignore="RtlHardcoded" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lItemMisPedidos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/background_item_menu_drawer"
+        android:clickable="true"
+        android:onClick="onClickItemDrawerMenu"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.3"
+            android:contentDescription="@string/txt_descripcion_imagen_ruta"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_menu_drawer_solicitudes"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/tvLabelMisPedidos"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:text="@string/txt_mis_pedidos"
+            android:textColor="#000"
+            android:textSize="20sp"
+            android:typeface="sans"
+            tools:ignore="RtlHardcoded" />
+
+    </LinearLayout>
+
+</LinearLayout>

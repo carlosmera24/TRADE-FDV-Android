@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#fbb03b</color>
+    <color name="colorPrimaryDark">#fbb03b</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="statusBarColor">#fbb03b</color>
+    <color name="white">#ffffff</color>
+    <color name="primary_material_light">#fbb03b</color>
+    <color name="gris">#dcdcdc</color>
+    <color name="gris2">#eaeaea</color>
+    <color name="btn_in">#95d33c</color>
+    <color name="btn_out">#cc0808</color>
+    <color name="btn_aus">#666666</color>
+    <color name="btn_novedad">#1d70ed</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00ffffff</color>
+</resources>

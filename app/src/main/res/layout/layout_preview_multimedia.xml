@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:background="#FFF"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_multimedia"
+        android:id="@+id/tvTituloAlerta"
+        android:background="#f9cc3d"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:gravity="center_vertical|center_horizontal"
+        android:padding="10dp" />
+
+    <ImageView
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        app:srcCompat="@drawable/ic_picture_gallery"
+        android:id="@+id/ivPreview"
+        android:layout_margin="10dp"
+        android:contentDescription="@string/txt_descripcion_logo" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btEnviar"
+            android:text="@string/txt_enviar"
+            android:background="@drawable/bt_naranja"
+            android:textColor="@color/black"
+            android:layout_marginEnd="10dp"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btCancelar"
+            android:text="@string/txt_cancelar"
+            android:background="@drawable/bt_naranja"
+            android:textColor="@color/black"
+            tools:ignore="ButtonStyle" />
+
+    </LinearLayout>
+
+</LinearLayout>
