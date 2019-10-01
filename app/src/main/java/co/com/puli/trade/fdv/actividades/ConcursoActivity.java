@@ -17,15 +17,15 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -102,7 +102,7 @@ public class ConcursoActivity extends AppCompatActivity {
         fuentes = new CustomFonts(getAssets());
 
         //Definir Toolbar como ActionBar
-        Toolbar bar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar bar = findViewById(R.id.toolbar);
         //Eliminar imagen y asignar color
         bar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
         setSupportActionBar(bar);
@@ -114,18 +114,18 @@ public class ConcursoActivity extends AppCompatActivity {
         id_destino = bundle.getString("id_destino");
         usuario_chat = bundle.getString("usuario_chat");
 
-        TextView tvTitulo = (TextView) findViewById(R.id.tvTitulo);
+        TextView tvTitulo = findViewById(R.id.tvTitulo);
         tvTitulo.setTypeface(fuentes.getBoldFont());
         tvTitulo.setText(usuario_chat);
 
         //RecyclerView para el listado del chat
-        lvChat = (RecyclerView) findViewById(R.id.lvChat);
+        lvChat = findViewById(R.id.lvChat);
         lvChat.setHasFixedSize( true );
         LinearLayoutManager layout_manager = new LinearLayoutManager(this);
         lvChat.setLayoutManager( layout_manager );
         lvChat.setAdapter(new ChatAdapter(null, ConcursoActivity.this, id_usuario));
 
-        etMensaje = (EditText) findViewById(R.id.etMensaje);
+        etMensaje = findViewById(R.id.etMensaje);
         etMensaje.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -137,7 +137,7 @@ public class ConcursoActivity extends AppCompatActivity {
             }
         });
 
-        ibEnviar = (ImageButton) findViewById(R.id.ibEnviar);
+        ibEnviar = findViewById(R.id.ibEnviar);
         ibEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,7 +145,7 @@ public class ConcursoActivity extends AppCompatActivity {
             }
         });
 
-        ibSelMedia = (ImageButton) findViewById(R.id.btnSeleccionarMedia);
+        ibSelMedia = findViewById(R.id.btnSeleccionarMedia);
         ibSelMedia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

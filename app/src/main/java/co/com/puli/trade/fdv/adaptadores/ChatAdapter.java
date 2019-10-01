@@ -2,7 +2,7 @@ package co.com.puli.trade.fdv.adaptadores;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +56,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>
     public void onBindViewHolder(ViewHolder holder, int position)
     {
         Chat chat = mensajes.get( position );
-        holder.wvMsg.loadData(chat.getMensaje(), "text/html; charset=utf-8", "utf-8");
+        holder.wvMsg.loadDataWithBaseURL(null, chat.getMensaje(), "text/html; charset=utf-8", "utf-8", null);
 //        if( eliminarCache() )
 //        {
 //            holder.wvMsg.clearCache( true );

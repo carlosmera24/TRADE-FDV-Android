@@ -7,10 +7,10 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -53,7 +53,7 @@ public class FUEC_RegistroActivity extends AppCompatActivity
         CustomFonts fuentes = new CustomFonts( getAssets() );
 
         //Definir Toolbar como ActionBar
-        Toolbar bar = (Toolbar) findViewById( R.id.toolbar );
+        Toolbar bar = findViewById( R.id.toolbar );
         //Eliminar imagen y asignar color
         bar.setBackgroundColor( ContextCompat.getColor( this, R.color.colorPrimary ) );
         setSupportActionBar(bar);
@@ -70,8 +70,8 @@ public class FUEC_RegistroActivity extends AppCompatActivity
 
 
 
-        final EditText etFchIni = (EditText) findViewById( R.id.etFchIniServicio);
-        final EditText etFchFin = (EditText) findViewById( R.id.etFchFinServicio);
+        final EditText etFchIni = findViewById( R.id.etFchIniServicio);
+        final EditText etFchFin = findViewById( R.id.etFchFinServicio);
         etFchIni.setInputType( InputType.TYPE_NULL );
         etFchIni.setTextIsSelectable( true );
         etFchIni.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -97,8 +97,8 @@ public class FUEC_RegistroActivity extends AppCompatActivity
             }
         });
 
-        Button btGuardar = (Button) findViewById( R.id.btGuardar );
-        Button btCancelar = (Button) findViewById( R.id.btCancelar );
+        Button btGuardar = findViewById( R.id.btGuardar );
+        Button btCancelar = findViewById( R.id.btCancelar );
         btGuardar.setTypeface( fuentes.getBoldFont() );
         btCancelar.setTypeface( fuentes.getBoldFont() );
 
@@ -175,21 +175,21 @@ public class FUEC_RegistroActivity extends AppCompatActivity
      * */
     public void registrarSolicitud()
     {
-        EditText etEmpresa = (EditText) findViewById( R.id.etEmpresa );
-        Spinner spObjeto = (Spinner) findViewById( etObjeto );
-        EditText etOrigen = (EditText) findViewById( R.id.etOrigenRecorrido );
-        EditText etDestino = (EditText) findViewById( R.id.etDestinoRecorrido );
-        EditText etPlaca = (EditText) findViewById( R.id.etPlaca );
-        EditText etNombre = (EditText) findViewById( R.id.etNombreRes );
-        EditText etDir = (EditText) findViewById( R.id.etDir );
-        EditText etTel = (EditText) findViewById( R.id.etTel);
-        EditText etNit = (EditText) findViewById( R.id.etNit);
-        EditText etCc = (EditText) findViewById( R.id.etCcResponsable);
-        EditText etFchIni = (EditText) findViewById( R.id.etFchIniServicio);
-        EditText etFchFin = (EditText) findViewById( R.id.etFchFinServicio);
-        EditText etCel = (EditText) findViewById( R.id.etCel);
-        EditText etEmail = (EditText) findViewById( R.id.etEmail);
-        EditText etValor = (EditText) findViewById( R.id.etValor);
+        EditText etEmpresa = findViewById( R.id.etEmpresa );
+        Spinner spObjeto = findViewById( etObjeto );
+        EditText etOrigen = findViewById( R.id.etOrigenRecorrido );
+        EditText etDestino = findViewById( R.id.etDestinoRecorrido );
+        EditText etPlaca = findViewById( R.id.etPlaca );
+        EditText etNombre = findViewById( R.id.etNombreRes );
+        EditText etDir = findViewById( R.id.etDir );
+        EditText etTel = findViewById( R.id.etTel);
+        EditText etNit = findViewById( R.id.etNit);
+        EditText etCc = findViewById( R.id.etCcResponsable);
+        EditText etFchIni = findViewById( R.id.etFchIniServicio);
+        EditText etFchFin = findViewById( R.id.etFchFinServicio);
+        EditText etCel = findViewById( R.id.etCel);
+        EditText etEmail = findViewById( R.id.etEmail);
+        EditText etValor = findViewById( R.id.etValor);
 
         if( TextUtils.isEmpty( etEmpresa.getText() ) )
         {

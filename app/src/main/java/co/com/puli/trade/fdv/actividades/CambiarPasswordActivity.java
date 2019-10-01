@@ -10,10 +10,10 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -59,7 +59,7 @@ public class CambiarPasswordActivity extends AppCompatActivity
         CustomFonts fuentes = new CustomFonts( getAssets() );
 
         //Definir Toolbar como ActionBar
-        Toolbar bar = (Toolbar) findViewById( R.id.toolbar );
+        Toolbar bar = findViewById( R.id.toolbar );
         //Eliminar imagen y asignar color
         bar.setBackgroundDrawable( null );
         bar.setBackgroundColor( ContextCompat.getColor( this, R.color.colorPrimary) );
@@ -70,10 +70,10 @@ public class CambiarPasswordActivity extends AppCompatActivity
         bundle = getIntent().getExtras();
         id_usuario = bundle.getString("id_usuario");
 
-        content_layout = (LinearLayout) findViewById( R.id.contentLayout );
+        content_layout = findViewById( R.id.contentLayout );
 
-        etNewPass = (EditText) findViewById( R.id.etNewPass );
-        etRepeatPass = (EditText) findViewById( R.id.etRepeatPass );
+        etNewPass = findViewById( R.id.etNewPass );
+        etRepeatPass = findViewById( R.id.etRepeatPass );
 
         etRepeatPass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
         @Override
@@ -89,7 +89,7 @@ public class CambiarPasswordActivity extends AppCompatActivity
         }
     });
 
-        Button btGuardar = (Button) findViewById( R.id.btGuardar );
+        Button btGuardar = findViewById( R.id.btGuardar );
         btGuardar.setTypeface( fuentes.getBoldFont() );
         btGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,7 +99,7 @@ public class CambiarPasswordActivity extends AppCompatActivity
             }
         });
 
-        Button btCancelar = (Button) findViewById( R.id.btCancelar );
+        Button btCancelar = findViewById( R.id.btCancelar );
         btCancelar.setTypeface( fuentes.getBoldFont() );
         btCancelar.setOnClickListener(new View.OnClickListener() {
             @Override

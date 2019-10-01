@@ -17,10 +17,10 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -474,11 +474,11 @@ public class NuevoPDVActivity extends AppCompatActivity implements LocationListe
                     {
                         progreso.cancel();
                         //Visualizar Dialogo informativo
-                        android.support.v7.app.AlertDialog.Builder build;
+                        androidx.appcompat.app.AlertDialog.Builder build;
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            build = new android.support.v7.app.AlertDialog.Builder(NuevoPDVActivity.this);
+                            build = new androidx.appcompat.app.AlertDialog.Builder(NuevoPDVActivity.this);
                         }else{
-                            build = new android.support.v7.app.AlertDialog.Builder(NuevoPDVActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar);
+                            build = new androidx.appcompat.app.AlertDialog.Builder(NuevoPDVActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar);
                         }
                         build.setTitle("Registro PDV");
                         build.setMessage( getString( R.string.txt_msg_pdv_registrado) );

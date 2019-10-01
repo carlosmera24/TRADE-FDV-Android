@@ -10,10 +10,10 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -56,7 +56,7 @@ public class RegistroActivity extends AppCompatActivity
         CustomFonts fuentes = new CustomFonts( getAssets() );
 
         //Definir Toolbar como ActionBar
-        Toolbar bar = (Toolbar) findViewById( R.id.toolbar );
+        Toolbar bar = findViewById( R.id.toolbar );
         //Eliminar imagen y asignar color
         bar.setBackgroundColor( ContextCompat.getColor( this, R.color.colorPrimary) );
         setSupportActionBar(bar);

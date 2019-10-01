@@ -5,11 +5,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.tabs.TabLayout;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
@@ -45,7 +45,7 @@ public class ChatUsuariosActivity extends AppCompatActivity
         URL_USUARIOS_CHAT = getString( R.string.url_server_backend ) + "consultar_usuarios_chat.jsp";
 
         //Definir Toolbar como ActionBar
-        Toolbar bar = (Toolbar) findViewById( R.id.toolbar );
+        Toolbar bar = findViewById( R.id.toolbar );
         //Eliminar imagen y asignar color
         bar.setBackgroundColor( ContextCompat.getColor( this, R.color.colorPrimary ) );
         setSupportActionBar(bar);

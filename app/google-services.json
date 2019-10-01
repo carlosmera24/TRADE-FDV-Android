@@ -1,0 +1,127 @@
+{
+  "project_info": {
+    "project_number": "195026063649",
+    "firebase_url": "https://puli-3dda6.firebaseio.com",
+    "project_id": "puli-3dda6",
+    "storage_bucket": "puli-3dda6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195026063649:android:9918faac74c713bb922e60",
+        "android_client_info": {
+          "package_name": "co.com.puli.trade.fdv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "195026063649-5sbtplfg82v7d5c8cqv0i8nbcntjv30r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG6gxzQnSxoq1RKgIIbbfYggsOCqxmyj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "195026063649-5sbtplfg82v7d5c8cqv0i8nbcntjv30r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195026063649:android:aa8219c612a666fd922e60",
+        "android_client_info": {
+          "package_name": "com.viajesnuevacolombia.administrativa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "195026063649-5sbtplfg82v7d5c8cqv0i8nbcntjv30r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG6gxzQnSxoq1RKgIIbbfYggsOCqxmyj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "195026063649-5sbtplfg82v7d5c8cqv0i8nbcntjv30r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195026063649:android:6a8397eb2d8a73e4922e60",
+        "android_client_info": {
+          "package_name": "com.viajesnuevacolombia.padres"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "195026063649-5sbtplfg82v7d5c8cqv0i8nbcntjv30r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG6gxzQnSxoq1RKgIIbbfYggsOCqxmyj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "195026063649-5sbtplfg82v7d5c8cqv0i8nbcntjv30r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195026063649:android:f7404b296d7668a9922e60",
+        "android_client_info": {
+          "package_name": "com.viajesnuevacolombia.transportadores"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "195026063649-5sbtplfg82v7d5c8cqv0i8nbcntjv30r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG6gxzQnSxoq1RKgIIbbfYggsOCqxmyj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "195026063649-5sbtplfg82v7d5c8cqv0i8nbcntjv30r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

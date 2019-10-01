@@ -5,9 +5,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
@@ -50,20 +50,20 @@ public class MensajesActivity extends AppCompatActivity
         CustomFonts fuentes = new CustomFonts( getAssets() );
 
         //Definir Toolbar como ActionBar
-        Toolbar bar = (Toolbar) findViewById( R.id.toolbar );
+        Toolbar bar = findViewById( R.id.toolbar );
         //Eliminar imagen y asignar color
         bar.setBackgroundColor( ContextCompat.getColor( this, R.color.colorPrimary ) );
         setSupportActionBar(bar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        TextView tvTitulo = (TextView) findViewById( R.id.tvTitulo );
+        TextView tvTitulo = findViewById( R.id.tvTitulo );
         tvTitulo.setTypeface( fuentes.getRobotoThinFont() );
 
         //Extras
         Bundle bundle = getIntent().getExtras();
         id_usuario = bundle.getString("id_usuario");
 
-        lvMensaje = (ListView) findViewById( R.id.lvMensajes );
+        lvMensaje = findViewById( R.id.lvMensajes );
     }
 
     @Override

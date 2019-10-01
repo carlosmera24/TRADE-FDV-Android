@@ -3,9 +3,9 @@ package co.com.puli.trade.fdv.actividades;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
@@ -23,14 +23,14 @@ public class PausaActivaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pausa_activa);
 
         //Definir Toolbar como ActionBar
-        Toolbar bar = (Toolbar) findViewById( R.id.toolbar );
+        Toolbar bar = findViewById( R.id.toolbar );
         //Eliminar imagen y asignar color
         bar.setBackgroundColor( ContextCompat.getColor( this, R.color.colorPrimary ) );
         setSupportActionBar(bar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //WebView
-        WebView webVPausa = (WebView) findViewById( R.id.wvPausa );
+        WebView webVPausa = findViewById( R.id.wvPausa );
         webVPausa.getSettings().setJavaScriptEnabled(true);
         webVPausa.loadUrl("http://www.viajesnuevacolombia.com/app-pausa-activa/");
     }

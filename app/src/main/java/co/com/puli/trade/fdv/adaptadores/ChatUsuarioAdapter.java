@@ -2,9 +2,9 @@ package co.com.puli.trade.fdv.adaptadores;
 
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import co.com.puli.trade.fdv.R;
 import co.com.puli.trade.fdv.clases.UsuarioChat;

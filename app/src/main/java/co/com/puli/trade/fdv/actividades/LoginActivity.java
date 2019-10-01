@@ -13,7 +13,9 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -26,7 +28,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
 import co.com.puli.trade.fdv.R;
 import co.com.puli.trade.fdv.clases.ConsultaExterna;
 import co.com.puli.trade.fdv.clases.CustomFonts;
@@ -74,16 +80,16 @@ public class LoginActivity extends AppCompatActivity
         URL_FECHA_INSPECCION= getString( R.string.url_server_backend ) + "consultar_fecha_inspeccion.jsp";
         URL_DATOS_LOGIN= getString( R.string.url_server_backend ) + "registrar_datos_login.jsp";
 
-        etUser = (EditText) findViewById( R.id.etUsuario );
-        etPass = (EditText) findViewById( R.id.etPassword );
+        etUser = findViewById( R.id.etUsuario );
+        etPass = findViewById( R.id.etPassword );
 
         CustomFonts fuentes = new CustomFonts( getAssets() );
 
-        content_layout = (LinearLayout) findViewById(R.id.content_layout_center);
+        content_layout = findViewById(R.id.content_layout_center);
 
-        ivLogo = (ImageView) findViewById(R.id.imageViewLogo);
+        ivLogo = findViewById(R.id.imageViewLogo);
 
-        ivFooter = (ImageView) findViewById(R.id.imageViewFooter);
+        ivFooter = findViewById(R.id.imageViewFooter);
 
         etPass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -101,7 +107,7 @@ public class LoginActivity extends AppCompatActivity
         });
 
 
-        Button btIngreso = (Button) findViewById(R.id.btIngreso);
+        Button btIngreso = findViewById(R.id.btIngreso);
         btIngreso.setTypeface(fuentes.getBoldFont());
         btIngreso.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,10 +116,10 @@ public class LoginActivity extends AppCompatActivity
             }
         });
 
-        Button btRecordar = (Button) findViewById(R.id.btRecordarPas);
+        Button btRecordar = findViewById(R.id.btRecordarPas);
         btRecordar.setTypeface( fuentes.getRobotoThinFont() );
 
-        Button btCrear = (Button) findViewById( R.id.btCrearUsuario );
+        Button btCrear = findViewById( R.id.btCrearUsuario );
         btCrear.setTypeface( fuentes.getRobotoThinFont() );
         btCrear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,8 +191,8 @@ public class LoginActivity extends AppCompatActivity
                 //Si el idReg es igual a null, el token en la BD del usuario es null, o el token y el idReg son diferentes
                 if (idReg == null || datos.getString("token").equals("NULL") || !datos.getString("token").equals(idReg) ) //Actualizar o solicitar registro ID
                 {
-                    RegistrarGCM rgcm = new RegistrarGCM(datos);
-                    rgcm.execute("");
+                    //Procesar la obtención del token del dispositivo generado desde el servidor FCM
+                    procesarGetTokenFCM( datos );
                 } else {
                     consultarParametrosGenerales(datos);
                 }
@@ -197,6 +203,41 @@ public class LoginActivity extends AppCompatActivity
         }else{
             consultarParametrosGenerales(datos);
         }
+    }
+
+    /**
+     * Método encargado de procesar el registro del App en el servidor FCM y obtener el token del dispositivo,
+     * Intenta obtener el TOKEN del dispositivo, si es correcto se envía el token para registrarse en el servidor BackEnd,
+     * De lo contrario (Falla) se continua con el App informando el error.
+     * @param datos JSONObject con los datos requeridos del usuario
+     */
+    public void procesarGetTokenFCM(final JSONObject datos )
+    {
+        //Obtener el token de FCM
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if( !task.isSuccessful() )
+                {
+                    new Utilidades().mostrarSimpleMensaje(LoginActivity.this, "Error", getString(R.string.txt_msg_error_token_fcm), true);
+                    consultarParametrosGenerales( datos );
+                    return;
+                }
+
+                //get Token
+                String token = task.getResult().getToken();
+                try {
+                    //Actualizar registro del token en la BD del servidro WEB
+                    RegistrarTokenBDTask rtbd = new RegistrarTokenBDTask( datos );
+                    postParam.put("id_usuario", datos.getString("id_usuario") );
+                    postParam.put("token", token );
+                    rtbd.execute( URL_REGISTRO_TOKEN );
+                }catch(JSONException e)
+                {
+                    Log.e("JSONException", "LoginActivity.procesarGetTokenFCM.onSuccess" + e.toString() );
+                }
+            }
+        });
     }
 
     /**
@@ -437,65 +478,6 @@ public class LoginActivity extends AppCompatActivity
             }
         }
     }//ValidarInicioSessionTask
-
-    /**
-     * Clase encargada de procesar el registro en el serbvidor GCM
-     * */
-    class RegistrarGCM extends AsyncTask<String, Integer, String>
-    {
-        ProgressDialog progreso;
-        JSONObject datos;
-
-        public RegistrarGCM(JSONObject datos) {
-            this.datos = datos;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progreso = ProgressDialog.show(LoginActivity.this, "", getString( R.string.txt_msg_registro_gcm ), true);
-            progreso.setCancelable( false );
-        }
-
-        @Override
-        protected String doInBackground(String... params){
-            String id_registro;
-            try
-            {
-                //Registrar en servidor GCM
-                GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
-                id_registro =  gcm.register( SENDER_ID );
-            }catch(Exception e)
-            {
-                Log.e("Exception", "LoginActivity.RegistrarGCM.doInBackground:" + e.toString());
-                id_registro = "ERROR";
-            }
-            return id_registro;
-        }
-
-        @Override
-        protected void onPostExecute(String registro_id_gcm) {
-            super.onPostExecute(registro_id_gcm);
-            progreso.cancel();
-            if( registro_id_gcm.equals("ERROR") )
-            {
-                new Utilidades().mostrarSimpleMensaje(LoginActivity.this, "Error", getString(R.string.txt_msg_error_registro_gcm), true);
-                iniciarActividadPrincipal( datos );
-            }else
-            {
-                try {
-                    //Actualizar registro del token en la BD del servidro WEB
-                    RegistrarTokenBDTask rtbd = new RegistrarTokenBDTask( datos );
-                    postParam.put("id_usuario", datos.getString("id_usuario") );
-                    postParam.put("token", registro_id_gcm );
-                    rtbd.execute( URL_REGISTRO_TOKEN );
-                }catch(JSONException e)
-                {
-                    Log.e("JSONException", "LoginActivity.RegistrarGCM.onPostExecute" + e.toString() );
-                }
-            }
-        }
-    }//RegistrarGCM
 
     /**
      * Clase encargada de procesar el registro del token en la BD

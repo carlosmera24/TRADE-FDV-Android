@@ -2,16 +2,15 @@ package co.com.puli.trade.fdv.actividades;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
@@ -29,7 +28,6 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 import co.com.puli.trade.fdv.R;
@@ -58,7 +56,7 @@ public class PuntoOportunidadActivity extends AppCompatActivity {
         URL_CONSULTAR_INFORME = getString(R.string.url_server_backend) + "consultar_informe_oportunidad_pdv.jsp?id_pdv=";
 
         //Definir Toolbar como ActionBar
-        Toolbar bar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar bar = findViewById(R.id.toolbar);
         //Eliminar imagen y asignar color
         bar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
         setSupportActionBar(bar);

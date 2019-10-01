@@ -250,4 +250,8 @@
     <string name="txt_consulta_notificaciones">Consultando notificaciones&#8230;</string>
     <string name="txt_notificaciones">Notificaciones</string>
     <string name="txt_error_llamada">Lo sentimos, no es posible realizar la llamada al contacto error:</string>
+    <string name="channel_id_default">PULI-Notification-2019</string>
+    <string name="channel_name">PULI-Notification-Channel</string>
+    <string name="channel_description">Canal de notificaciones por defecto para el APP PULI, utilizado para configurar la recepción de notificaciones FCM</string>
+    <string name="txt_msg_error_token_fcm">Ocurrió un problema al obtener el TOKEN del dispositivo en el servidor FCM, el APP continuará pero no se podrán recibir notificaciones</string>
 </resources>

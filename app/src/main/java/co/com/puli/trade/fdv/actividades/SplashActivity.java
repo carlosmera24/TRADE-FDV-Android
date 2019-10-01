@@ -1,11 +1,13 @@
 package co.com.puli.trade.fdv.actividades;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,8 +30,11 @@ public class SplashActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        content_layout = (LinearLayout) findViewById( R.id.contentLayout );
-        ivLogo = (ImageView) findViewById( R.id.imageViewLogo );
+        content_layout = findViewById( R.id.contentLayout );
+        ivLogo = findViewById( R.id.imageViewLogo );
+
+        //Crear el canal de notificaciones
+        createNotificationChanel();
 
         //Definir el tiempo que se visualizará la actividad para pasar al login
         TimerTask task = new TimerTask() {
@@ -88,5 +93,27 @@ public class SplashActivity extends AppCompatActivity
         content_layout.setBackgroundResource(0);
         ivLogo.setImageBitmap(null);
         System.gc();
+    }
+
+    /**
+     * Método encargado de crear el canal de notificaciones para el App
+     * */
+    private void createNotificationChanel()
+    {
+        //Creater canal de notificaciones solo para API 26+
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            String chanel_id = getString( R.string.channel_id_default );
+            CharSequence name = getString( R.string.channel_name );
+            String description = getString( R.string.channel_description );
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            NotificationChannel channel = new NotificationChannel( chanel_id, name, importance);
+            channel.setDescription( description );
+
+            //Registrar el canal con el sistema
+            NotificationManager notificationManager = getSystemService( NotificationManager.class );
+            notificationManager.createNotificationChannel( channel );
+        }
     }
 }

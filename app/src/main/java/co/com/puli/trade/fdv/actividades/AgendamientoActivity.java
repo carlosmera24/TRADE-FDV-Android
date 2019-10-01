@@ -10,9 +10,9 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -29,7 +29,6 @@ import android.widget.TextView;
 
 import co.com.puli.trade.fdv.R;
 import co.com.puli.trade.fdv.adaptadores.AgendamientoAdapter;
-import co.com.puli.trade.fdv.adaptadores.PDVRutaAdapter;
 import co.com.puli.trade.fdv.clases.Ciudad;
 import co.com.puli.trade.fdv.clases.ConsultaExterna;
 import co.com.puli.trade.fdv.clases.CustomFonts;
@@ -70,7 +69,7 @@ public class AgendamientoActivity extends AppCompatActivity {
         CustomFonts fuentes = new CustomFonts( getAssets() );
 
         //Definir Toolbar como ActionBar
-        Toolbar bar = (Toolbar) findViewById( R.id.toolbar );
+        Toolbar bar = findViewById( R.id.toolbar );
         //Eliminar imagen y asignar color
         bar.setBackgroundColor( ContextCompat.getColor( this, R.color.colorPrimary) );
         setSupportActionBar(bar);
@@ -85,7 +84,7 @@ public class AgendamientoActivity extends AppCompatActivity {
         spZona = findViewById (R.id.spZona );
 
         //Fecha - DatePicker
-        final EditText etFecha = (EditText) findViewById( R.id.etFecha );
+        final EditText etFecha = findViewById( R.id.etFecha );
         etFecha.setTypeface( fuentes.getRobotoThinFont() );
         etFecha.setOnClickListener(new View.OnClickListener() {
             @Override
