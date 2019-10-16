@@ -653,16 +653,13 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
         {
             if( id_vehiculo != null && !id_vehiculo.equals("") )
             {
-                if( gpsServ.isCanGetLocation() )
-                {
+                if (gpsServ.isCanGetLocation()) {
                     Location location = gpsServ.getLocation();
-                    if( location != null )
-                    {
-                        if( gpsServ.conectadoSocket() && gpsServ.puedeSocketEnviarMensajes() )
-                        {
+                    if (location != null) {
+                        if (gpsServ.conectadoSocket() && gpsServ.puedeSocketEnviarMensajes()) {
                             try {
                                 //Mostrar dialogo
-                                progress_activo = ProgressDialog.show(PrincipalActivity.this, null, getString( R.string.txt_registro_ruta), true);
+                                progress_activo = ProgressDialog.show(PrincipalActivity.this, null, getString(R.string.txt_registro_ruta), true);
                                 progress_activo.setCancelable(false);
                                 //Preparar parametros
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -675,15 +672,14 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                                 msg.put("tipo", "INI");
                                 msg.put("guardar_bbdd", "YES");
                                 msg.put("enviar_notif", "YES");
-                                if( gpsServ.enviarMensajeSocket(msg) )
-                                {
+                                if (gpsServ.enviarMensajeSocket(msg)) {
                                     //Establecer espera de respuesta que será enviada desde GPSServices por el Socket Servidor GPS
                                     OPCION_RES_SOCKECT_GPS = 1;
-                                }else//El socket no puede enviar mensajes
+                                } else//El socket no puede enviar mensajes
                                 {
                                     new Utilidades().mostrarSimpleMensaje(this, "Inicio de ruta", getString(R.string.txt_msg_error_registro_inicio_ruta), true);
                                     //Restaurar botón
-                                    btn_activo.setEnabled( true );
+                                    btn_activo.setEnabled(true);
                                     btn_activo = null;
                                     //cancelar dialogo
                                     progress_activo.cancel();
@@ -695,11 +691,11 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                                 progress_activo.cancel();
                                 progress_activo = null;
                                 //Procesar inicio de ruta con el WebServices
-                                registrarInicioRutaWebServices( location );
+                                registrarInicioRutaWebServices(location);
                             }
-                        }else //Procesar inicio de ruta con el WebServices
+                        } else //Procesar inicio de ruta con el WebServices
                         {
-                            registrarInicioRutaWebServices( location );
+                            registrarInicioRutaWebServices(location);
                         }
                     }
                 }

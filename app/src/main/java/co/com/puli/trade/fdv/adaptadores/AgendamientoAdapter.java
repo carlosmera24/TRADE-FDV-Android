@@ -104,17 +104,24 @@ public class AgendamientoAdapter  extends BaseAdapter
 
         //Controlar evento del swtch
         final int post_item = i;
-        holder.swVisita.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.swVisita.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onClick(View view) {
+                //Cambiar estado de la valoración, se modifica a su estado contrario.
                 TipoInspeccion tmp = (TipoInspeccion) getItem( post_item );
-                tmp.setValoracion( isChecked ? 1 : 0 );
+                tmp.setValoracion( tmp.getValoracion() == 1 ? 0 : 1 );
                 lista_pdv.set(post_item, tmp);
                 notifyDataSetChanged();
             }
         });
 
         return vista;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        Log.i("agenda", lista_pdv.toString() );
     }
 
     /**

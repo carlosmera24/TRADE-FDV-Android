@@ -10,4 +10,7 @@ App para FDV en android
 	- Actualizadas dependencias a las versiones recientes disponibles.
 	- Se modifica **minSdkVersion** de **15** a **16** ya que FCM soporta, como mínimo, Android 4.1 (SDK 16).
 	- Se remplaza **loadData()** para el View de los mensajes del Chat por **loadDataWithBaseURL()**.
-    Se presentaba errores de visualización en algunos dispositivos, como es el caso de los Huawei.
+	Se presentaba errores de visualización en algunos dispositivos, como es el caso de los Huawei.
+- **1.5** Correcciónes 16/10/2019:    
+    - Se corrige problema en el inicio de ruta.
+    - Corrección en la selección en la lista de puntos de venta para el agendamiento.
