@@ -16,6 +16,7 @@ public class Producto
         this.empresa = empresa;
         this.id_categoria = id_categoria;
         this.categoria = categoria;
+        catidad = 0;
     }
 
 

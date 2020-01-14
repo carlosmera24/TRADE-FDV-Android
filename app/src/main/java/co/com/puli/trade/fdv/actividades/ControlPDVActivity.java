@@ -115,6 +115,7 @@ public class ControlPDVActivity extends AppCompatActivity {
                 break;
             case R.id.lItemPuntoOportunidad:
                 intent = new Intent( ControlPDVActivity.this, PuntoOportunidadActivity.class);
+                intent.putExtra( "id_fdv", id_fdv );
                 startActivity( intent );
                 break;
             case R.id.lItemNuevoPedido:

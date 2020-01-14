@@ -63,7 +63,7 @@ public class AgendamientoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_agendamiento);
 
         URL_ZONAS = getString(R.string.url_server_backend) + "consultar_zonas.jsp";
-        URL_CONSULTAR_PDV = getString(R.string.url_server_backend) + "consultar_pdv.jsp";
+        URL_CONSULTAR_PDV = getString(R.string.url_server_backend) + "consultar_pdvs_fdv.jsp";
         URL_REGISTRO_AGENDA = getString(R.string.url_server_backend) + "registrar_agendamiento.jsp";
 
         CustomFonts fuentes = new CustomFonts( getAssets() );
@@ -151,6 +151,7 @@ public class AgendamientoActivity extends AppCompatActivity {
                 }else {
                     postParam = new HashMap<>();
                     postParam.put("zona", "" + zona.getId());
+                    postParam.put("id_fdv", id_fdv );
                     ConsultaPDVTask cpdvt = new ConsultaPDVTask();
                     cpdvt.execute(URL_CONSULTAR_PDV);
                 }

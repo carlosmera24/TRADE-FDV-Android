@@ -1223,6 +1223,7 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                         postParam.put("fecha", sdf.format(Calendar.getInstance().getTime()));
                         postParam.put("desc_alerta", alerta_emitida.getDescripcion());
                         postParam.put("id_nivel", ""+ alerta_emitida.getNivel() );
+                        postParam.put("id_fdv", id_fdv );
 
                         RegistrarAlertaTask rat = new RegistrarAlertaTask(dialog);
                         rat.execute( URL_REGISTRO_ALERTA );

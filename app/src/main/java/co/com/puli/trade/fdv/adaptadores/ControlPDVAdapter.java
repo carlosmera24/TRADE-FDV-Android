@@ -210,13 +210,9 @@ public class ControlPDVAdapter extends BaseAdapter
             JSONObject tmp = new JSONObject();
             try
             {
-                //Agregar solo los productos con cantidades superiores a 0
-                int cant = producto.getCatidad();
-                if( cant > 0 ) {
-                    tmp.put("id", "" + producto.getId());
-                    tmp.put("cantidad", "" + producto.getCatidad());
-                    array.put(tmp);
-                }
+                tmp.put("id", "" + producto.getId());
+                tmp.put("cantidad", "" + producto.getCatidad());
+                array.put(tmp);
             } catch (JSONException e) {
                 Log.e("ControlPDVAdapter","ControlPDVAdapter.productosToJSONArray.JSONException:"+ e.toString() );
             }

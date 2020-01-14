@@ -80,7 +80,7 @@ public class ChatUsuariosFragment extends Fragment
         switch( mPage )
         {
             case 1://Vendedores
-                    valido = perfil == 7 ? true : false;
+                    valido = perfil == 8 ? true : false;
                 break;
             case 2: //Coordiandores
                     valido = perfil == 9 ? true : false;

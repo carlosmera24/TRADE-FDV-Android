@@ -14,3 +14,13 @@ App para FDV en android
 - **1.5** Correcciónes 16/10/2019:    
     - Se corrige problema en el inicio de ruta.
     - Corrección en la selección en la lista de puntos de venta para el agendamiento.
+- **1.6** Correcciones
+    - **13/01/2020:**
+        - Se corrige visualización de usuarios PUNTOS DE VENTA para el chat, se modifica el perfil por 8 en lugar de 7.
+        - Se elimina restricción para registro de productos con valores 0 en la rebición de productos para el CheckIN en visitas a PDV.
+        - Se filtra listado de PDVs por ID FDV para Control PDV->Punto de oportunidad.
+    - **14/01/220:**
+        - Se filtra el listado de los PDVs por ID FDV para Control PDV->Mis pedidos.
+        - Se agrega al filtro de los PDV para el agendamiento el ID del PDV.
+        - Se corrige el registro del alerta para enviar notificación al JDV.
+    

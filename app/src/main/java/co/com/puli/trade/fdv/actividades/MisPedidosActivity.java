@@ -56,7 +56,7 @@ public class MisPedidosActivity extends AppCompatActivity {
 
         fuentes = new CustomFonts(getAssets());
 
-        URL_LISTA_PDV = getString(R.string.url_server_backend) + "consultar_pdv.jsp";
+        URL_LISTA_PDV = getString(R.string.url_server_backend) + "consultar_pdvs_fdv.jsp";
         URL_LISTA_PEDIDOS = getString(R.string.url_server_backend) + "consultar_pedido.jsp";
 
         //Definir Toolbar como ActionBar
@@ -108,6 +108,8 @@ public class MisPedidosActivity extends AppCompatActivity {
         if( new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)) )
         {
             //Consultar listado de PDV
+            postParam = new HashMap<>();
+            postParam.put("id_fdv", id_fdv);
             ConsultarListaPdvTask cpdv = new ConsultarListaPdvTask();
             cpdv.execute(URL_LISTA_PDV);
 
@@ -207,7 +209,7 @@ public class MisPedidosActivity extends AppCompatActivity {
         @Override
         protected JSONObject doInBackground(String... url) {
             ConsultaExterna ce = new ConsultaExterna();
-            return ce.ejecutarHttp(url[0]);
+            return ce.ejecutarHttpPost(url[0], postParam );
         }
         @Override
         protected void onPostExecute(JSONObject result) {

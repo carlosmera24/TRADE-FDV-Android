@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import co.com.puli.trade.fdv.R;
@@ -41,9 +42,10 @@ import co.com.puli.trade.fdv.clases.Utilidades;
 
 public class PuntoOportunidadActivity extends AppCompatActivity {
     private CustomFonts fuentes;
-    private String URL_LISTA_PDV, URL_CONSULTAR_INFORME;
+    private String id_fdv, URL_LISTA_PDV, URL_CONSULTAR_INFORME;
     private Spinner spPDV;
     private WebView wvInforme;
+    private HashMap<String,String> postParam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,7 @@ public class PuntoOportunidadActivity extends AppCompatActivity {
 
         fuentes = new CustomFonts(getAssets());
 
-        URL_LISTA_PDV = getString(R.string.url_server_backend) + "consultar_pdv.jsp";
+        URL_LISTA_PDV = getString(R.string.url_server_backend) + "consultar_pdvs_fdv.jsp";
         URL_CONSULTAR_INFORME = getString(R.string.url_server_backend) + "consultar_informe_oportunidad_pdv.jsp?id_pdv=";
 
         //Definir Toolbar como ActionBar
@@ -61,6 +63,9 @@ public class PuntoOportunidadActivity extends AppCompatActivity {
         bar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
         setSupportActionBar(bar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //Extras
+        Bundle bundle = getIntent().getExtras();
+        id_fdv = bundle.getString("id_fdv");
 
         spPDV = findViewById( R.id.spPDV );
         wvInforme = findViewById( R.id.wvInforme );
@@ -98,6 +103,8 @@ public class PuntoOportunidadActivity extends AppCompatActivity {
         if( new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)) )
         {
             //Consultar listado de PDV
+            postParam = new HashMap<>();
+            postParam.put("id_fdv", id_fdv);
             PuntoOportunidadActivity.ConsultarListaPdvTask cpdv = new PuntoOportunidadActivity.ConsultarListaPdvTask();
             cpdv.execute(URL_LISTA_PDV);
 
@@ -197,7 +204,7 @@ public class PuntoOportunidadActivity extends AppCompatActivity {
         @Override
         protected JSONObject doInBackground(String... url) {
             ConsultaExterna ce = new ConsultaExterna();
-            return ce.ejecutarHttp(url[0]);
+            return ce.ejecutarHttpPost(url[0], postParam );
         }
         @Override
         protected void onPostExecute(JSONObject result) {
