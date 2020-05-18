@@ -9,10 +9,19 @@
     tools:context=".actividades.PuntoOportunidadActivity">
 
     <!-- Toolbar como Action bar -->
-
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar_action_bar"/>
+
+    <Spinner
+        android:id="@+id/spPDV"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="@drawable/background_spinner"
+        android:paddingRight="20dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +34,7 @@
         android:paddingTop="10dp">
 
         <Spinner
-            android:id="@+id/spPDV"
+            android:id="@+id/spCategorias"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="2"

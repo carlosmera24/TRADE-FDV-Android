@@ -655,8 +655,10 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
             {
                 if (gpsServ.isCanGetLocation()) {
                     Location location = gpsServ.getLocation();
-                    if (location != null) {
-                        if (gpsServ.conectadoSocket() && gpsServ.puedeSocketEnviarMensajes()) {
+                    if (location != null)
+                    {
+                        if (gpsServ.conectadoSocket() && gpsServ.puedeSocketEnviarMensajes())
+                        {
                             try {
                                 //Mostrar dialogo
                                 progress_activo = ProgressDialog.show(PrincipalActivity.this, null, getString(R.string.txt_registro_ruta), true);
@@ -670,11 +672,16 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                                 msg.put("lat", "" + location.getLatitude());
                                 msg.put("lng", "" + location.getLongitude());
                                 msg.put("tipo", "INI");
-                                msg.put("guardar_bbdd", "YES");
-                                msg.put("enviar_notif", "YES");
-                                if (gpsServ.enviarMensajeSocket(msg)) {
+
+                                //No manejar el registro en la BBDD desde el socket, sino desde el WebServices
+                                //El registro del inicio de ruta se realiza en procesarRespuestaServidorSockectGPS();
+                                msg.put("guardar_bbdd", "NO");
+                                msg.put("enviar_notif", "NO");
+                                if (gpsServ.enviarMensajeSocket(msg)) //Esperar respuesta del Sockect
+                                {
                                     //Establecer espera de respuesta que será enviada desde GPSServices por el Socket Servidor GPS
                                     OPCION_RES_SOCKECT_GPS = 1;
+
                                 } else//El socket no puede enviar mensajes
                                 {
                                     new Utilidades().mostrarSimpleMensaje(this, "Inicio de ruta", getString(R.string.txt_msg_error_registro_inicio_ruta), true);
@@ -785,8 +792,11 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                                 msg.put("lat", "" + location.getLatitude());
                                 msg.put("lng", "" + location.getLongitude());
                                 msg.put("tipo", "FIN");
-                                msg.put("guardar_bbdd", "YES");
-                                msg.put("enviar_notif", "YES");
+
+                                //No manejar el registro en la BBDD desde el socket, sino desde el WebServices
+                                //El registro del inicio de ruta se realiza en procesarRespuestaServidorSockectGPS();
+                                msg.put("guardar_bbdd", "NO");
+                                msg.put("enviar_notif", "NO");
                                 if( gpsServ.enviarMensajeSocket(msg) )
                                 {
                                     //Establecer espera de respuesta que será enviada desde GPSServices por el Socket Servidor GPS
@@ -838,12 +848,26 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
         if( resBBDD != null ) {
             switch (OPCION_RES_SOCKECT_GPS) {
                 case 1: //Inicio de ruta
-                    try {
-                        if (resBBDD.getString("estado").equals("OK")) {
-                            //Procesar el fin del inicio de la ruta
-                            finalizarRegistroInicioRuta();
-                        } else {
-                            new Utilidades().mostrarSimpleMensaje(this, "Inicio de ruta", getString(R.string.txt_msg_error_registro_inicio_ruta), true);
+                    try
+                    {
+                        switch( resBBDD.getString("estado") )
+                        {
+                            case "OK":
+                                //Procesar el fin del inicio de la ruta
+                                finalizarRegistroInicioRuta();
+                                break;
+                            case "PENDIENTE": //No se registro en la BBDD, está pendiente su registro
+                                //Registrar el inicio de ruta a través del WebService
+                                if( gpsServ.isCanGetLocation() ){
+                                    Location location = gpsServ.getLocation();
+                                    if (location != null) {
+                                        registrarInicioRutaWebServices(location);
+                                    }
+                                }
+                                break;
+                            default:
+                                new Utilidades().mostrarSimpleMensaje(this, "Inicio de ruta", getString(R.string.txt_msg_error_registro_inicio_ruta), true);
+                                break;
                         }
                     } catch (JSONException e) {
                         Log.e("JSONExcepton", "PrincipalActivity.procesarRespuestaServidorSockectGPS.Case1.JSONException:" + e.toString());
@@ -852,11 +876,24 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                     break;
                 case 2: //Fin de ruta
                     try {
-                        if (resBBDD.getString("estado").equals("OK")) {
-                            //Procesar el fin del inicio de la ruta
-                            finalizarRegistroFinalRuta();
-                        } else {
-                            new Utilidades().mostrarSimpleMensaje(this, "Fin de ruta", getString(R.string.txt_msg_error_registro_fin_ruta), true);
+                        switch( resBBDD.getString("estado") )
+                        {
+                            case "OK":
+                                //Procesar el fin del inicio de la ruta
+                                finalizarRegistroFinalRuta();
+                                break;
+                            case "PENDIENTE": //No se registro en la BBDD, está pendiente su registro
+                                //Registrar el fin de ruta a través del WebService
+                                if( gpsServ.isCanGetLocation() ){
+                                    Location location = gpsServ.getLocation();
+                                    if (location != null) {
+                                        registrarFinalRutaWebServices(location);
+                                    }
+                                }
+                                break;
+                            default:
+                                new Utilidades().mostrarSimpleMensaje(this, "Fin de ruta", getString(R.string.txt_msg_error_registro_fin_ruta), true);
+                                break;
                         }
                     } catch (JSONException e) {
                         Log.e("JSONExcepton", "PrincipalActivity.procesarRespuestaServidorSockectGPS.Case1.JSONException:" + e.toString());

@@ -66,6 +66,8 @@
     <string name="txt_consulta_lista_pdv">Consultando lista de PDV&#8230;</string>
     <string name="txt_msg_lista_pdv_vacia">No tiene PDV asignados para su visita en el día de hoy.</string>
     <string name="txt_msg_lista_pdv_pedido_vacia">No tiene PDV asignados para realizar pedidos.</string>
+    <string name="txt_consulta_lista_categorias">Consultando lista de Categorías&#8230;</string>
+    <string name="txt_msg_lista_categorias_vacio">No se ecnontraron categorías diponibles para realizar la consulta.</string>
     <string name="txt_msg_no_pdv_checkin">No se ha realizado Check-In para los PDV asginados a su visita. Por favor realice primero este procedimiento antes de realizar un pedido.</string>
     <string name="txt_msg_checkin">CheckIn registrado satisfactoriamente</string>
     <string name="txt_msg_checkout">CheckOut registrado satisfactoriamente</string>

@@ -23,4 +23,7 @@ App para FDV en android
         - Se filtra el listado de los PDVs por ID FDV para Control PDV->Mis pedidos.
         - Se agrega al filtro de los PDV para el agendamiento el ID del PDV.
         - Se corrige el registro del alerta para enviar notificación al JDV.
-    
+- **1.7** Correcciones
+    - El registro de inicio y fin de visitas se registra desde la aplicación en todo momento, ya no lo hace el socket de posición en tiempo real.
+- **1.8**
+    - Agregado filtro de categorías para CONTROL PDV -> Pundo de oportunidad

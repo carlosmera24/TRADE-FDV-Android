@@ -737,8 +737,18 @@ public class GPSServices extends Service implements LocationListener
                             {
                                 case "RES_COORD": //Mensaje enviado desde el servidor como respuesta a mensaje enviado
                                     JSONObject res_bbdd = null;
-                                    try {
-                                        res_bbdd = jsonMsg.getJSONObject("registro_msg_bbdd");
+                                    try
+                                    {
+                                        if( jsonMsg.has( "registro_msg_bbdd") )
+                                        {
+                                            res_bbdd = jsonMsg.getJSONObject("registro_msg_bbdd");
+                                        }else if( jsonMsg.getJSONObject("coordenada").getString("guardar_bbdd").equals("NO") )
+                                        {
+                                            JSONObject res_new = new JSONObject();
+                                            res_new.put("estado", "PENDIENTE");
+                                            res_new.put("guardar_bbdd", "NO");
+                                            res_bbdd = res_new;
+                                        }
                                     }catch(JSONException e){
                                         Log.w("JSONException","GSPServices.ConexionSocketGPSRuta.Case.RES_COORD.JSONException:"+e.toString());
                                     }
