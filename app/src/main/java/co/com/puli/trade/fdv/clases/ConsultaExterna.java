@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
  * Utilizando HttpURLConnection
  * Created by Carlos Eduardo Mera Ruiz on 11/11/15.
  */
+@SuppressWarnings("unchecked")
 public class ConsultaExterna
 {
     private  final int HTTP_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(60);

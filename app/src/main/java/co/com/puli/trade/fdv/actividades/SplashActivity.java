@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 
 import co.com.puli.trade.fdv.R;
 import co.com.puli.trade.fdv.clases.ImageBitMap;
+import co.com.puli.trade.fdv.database.DatabaseHelper;
+import co.com.puli.trade.fdv.database.models.Usuario;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,9 +42,26 @@ public class SplashActivity extends AppCompatActivity
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-
-                //Iniciar la actividad Login
-                Intent mainIntent = new Intent().setClass(SplashActivity.this, LoginActivity.class);
+                Intent mainIntent = null;
+                Usuario user = new DatabaseHelper( getApplicationContext() ).getUsuario();
+                if( user != null )
+                {
+                    //Iniciar actividad principal
+                    mainIntent = new Intent().setClass(SplashActivity.this, PrincipalActivity.class);
+                    mainIntent.putExtra("id_usuario", ""+ user.getId());
+                    mainIntent.putExtra("id_perfil", ""+ user.getId_perfil());
+                    mainIntent.putExtra("usuario", user.getUsuario());
+                    mainIntent.putExtra("id_fdv", user.getId_conductor());
+                    mainIntent.putExtra("id_ruta", user.getId_ruta());
+                    mainIntent.putExtra("id_vehiculo", user.getId_fdv());
+                    mainIntent.putExtra("nombre_usuario", user.getNombre_usuario());
+                    mainIntent.putExtra("imagen", user.getImagen());
+                }else{
+                    //Iniciar la actividad Login
+                    mainIntent = new Intent().setClass(SplashActivity.this, LoginActivity.class);
+                }
+                mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                mainIntent.addFlags(0x8000);
                 startActivity(mainIntent);
                 finish();
             }

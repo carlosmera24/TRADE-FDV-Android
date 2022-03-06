@@ -7,15 +7,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.mousebird.maply.BaseController;
 import com.mousebird.maply.ComponentObject;
 import com.mousebird.maply.GlobeMapFragment;
 import com.mousebird.maply.MapController;
-import com.mousebird.maply.MaplyBaseController;
 import com.mousebird.maply.MarkerInfo;
 import com.mousebird.maply.Point2d;
-import com.mousebird.maply.QuadImageTileLayer;
-import com.mousebird.maply.RemoteTileInfo;
-import com.mousebird.maply.RemoteTileSource;
+import com.mousebird.maply.QuadImageLoader;
+import com.mousebird.maply.RemoteTileInfoNew;
+import com.mousebird.maply.RenderController;
+import com.mousebird.maply.SamplingParams;
 import com.mousebird.maply.ScreenMarker;
 import com.mousebird.maply.SelectedObject;
 import com.mousebird.maply.SphericalMercatorCoordSystem;
@@ -33,11 +34,6 @@ public class MapaFragment extends GlobeMapFragment {
     private double BASE_ELEVATION = 0.06;
     private ComponentObject coMarkers = null;
 
-    public MapaFragment() {
-        // Required empty public constructor
-    }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,26 +50,32 @@ public class MapaFragment extends GlobeMapFragment {
     protected void controlHasStarted() {
         super.controlHasStarted();
 
-        // setup base layer tiles
+        // setup up the local cache directory
         String cacheDirName = "stamen_puli_map_osm";
         File cacheDir = new File(getActivity().getCacheDir(), cacheDirName);
         cacheDir.mkdir();
-        RemoteTileSource remoteTileSource = new RemoteTileSource(new RemoteTileInfo( getString( R.string.url_server_tiles_map_osm), "png", 0, 18));
-        remoteTileSource.setCacheDir(cacheDir);
-        SphericalMercatorCoordSystem coordSystem = new SphericalMercatorCoordSystem();
 
-        // globeControl is the controller when using MapDisplayType.Globe
-        // mapControl is the controller when using MapDisplayType.Map
-        QuadImageTileLayer baseLayer = new QuadImageTileLayer(mapControl, coordSystem, remoteTileSource);
-        baseLayer.setImageDepth(1);
-        baseLayer.setSingleLevelLoading(false);
-        baseLayer.setUseTargetZoomLevel(false);
-        baseLayer.setCoverPoles(true);
-        baseLayer.setHandleEdges(true);
+        //Set up access to the tile images
+        RemoteTileInfoNew remoteTileSource = new RemoteTileInfoNew(
+                getString( R.string.url_server_tiles_map_osm ) + "{z}/{x}/{y}.png",
+                0,
+                18);
+        remoteTileSource.cacheDir = cacheDir;
 
-        // add layer and position
-        mapControl.addLayer(baseLayer);
-        mapControl.animatePositionGeo( degressToRadians(-74.058838), degressToRadians( 4.668821), 0.2, 1.0);
+        //Set up the globe parameters
+        SamplingParams params = new SamplingParams();
+        params.setCoordSystem( new SphericalMercatorCoordSystem() );
+        params.setSingleLevel(false);
+        params.setCoverPoles(true);
+        params.setEdgeMatching(true);
+        params.setMinZoom( remoteTileSource.minZoom );
+        params.setMaxZoom( remoteTileSource.maxZoom );
+
+        //Set up an image loader
+        QuadImageLoader loader = new QuadImageLoader( params, remoteTileSource, baseControl);
+        loader.setImageFormat(RenderController.ImageFormat.MaplyImageIntRGBA);
+
+        mapControl.animatePositionGeo( degressToRadians(-74.058838), degressToRadians( 4.668821), 0.2, 1.0 );
         mapControl.setAllowRotateGesture(true);
         mapControl.gestureDelegate = this; //Gestionar el toque sobre el mapa/marcadores
     }
@@ -131,7 +133,7 @@ public class MapaFragment extends GlobeMapFragment {
         marker.userObject = label; //Se agregar el label como objeto del usuario
         marker.selectable = true; //Habilitar selección del marcador
 
-        mapControl.addScreenMarker( marker, markerInfo, MaplyBaseController.ThreadMode.ThreadAny );
+        mapControl.addScreenMarker( marker, markerInfo, BaseController.ThreadMode.ThreadAny );
     }
 
     /**
@@ -146,7 +148,7 @@ public class MapaFragment extends GlobeMapFragment {
     {
         if( coMarkers != null ) {
             //Eliminar marcadores
-            mapControl.removeObject(coMarkers, MaplyBaseController.ThreadMode.ThreadCurrent);
+            mapControl.removeObject(coMarkers, BaseController.ThreadMode.ThreadCurrent);
         }
 
         //Crear nuevo marcador
@@ -160,7 +162,7 @@ public class MapaFragment extends GlobeMapFragment {
         marker.selectable = true; //Habilitar selección del marcador
 
         //Agregar nuevo marcador y guardarlo como ComponetObjet marker
-        coMarkers = mapControl.addScreenMarker( marker, markerInfo, MaplyBaseController.ThreadMode.ThreadCurrent);
+        coMarkers = mapControl.addScreenMarker( marker, markerInfo, BaseController.ThreadMode.ThreadCurrent);
     }
 
     /**
@@ -171,7 +173,7 @@ public class MapaFragment extends GlobeMapFragment {
         VectorInfo vectorInfo = new VectorInfo();
         vectorInfo.setColor( Color.parseColor("#008df2") );
         vectorInfo.setLineWidth( 6.f );
-        mapControl.addVector(vo, vectorInfo, MaplyBaseController.ThreadMode.ThreadAny);
+        mapControl.addVector(vo, vectorInfo, BaseController.ThreadMode.ThreadAny);
     }
 
     /**

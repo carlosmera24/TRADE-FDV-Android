@@ -23,7 +23,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -31,6 +36,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.provider.Settings;
 import android.telephony.PhoneNumberUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -48,7 +55,10 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
+
+import co.com.puli.trade.fdv.BuildConfig;
 import co.com.puli.trade.fdv.R;
 import co.com.puli.trade.fdv.adaptadores.PDVRutaAdapter;
 import co.com.puli.trade.fdv.clases.ConsultaExterna;
@@ -57,6 +67,7 @@ import co.com.puli.trade.fdv.clases.DescargarImagenTask;
 import co.com.puli.trade.fdv.clases.GPSServices;
 import co.com.puli.trade.fdv.clases.GlobalParametrosGenerales;
 import co.com.puli.trade.fdv.clases.ImageBitMap;
+import co.com.puli.trade.fdv.clases.LocationMonitoringService;
 import co.com.puli.trade.fdv.clases.NetworkBroadcastReceiver;
 import co.com.puli.trade.fdv.clases.PDV;
 import co.com.puli.trade.fdv.clases.TipoAlerta;
@@ -102,12 +113,17 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
     private ArrayList<Bitmap> imgs_banner = null;
     private int pos_banner;
     private final int PERMISION_REQUEST_CALL_PHONE = 1; //Permisos para llamada
+    private static final int REQUEST_PERMISSIONS_LOCATION = 101;
+    private static final int REQUEST_PERMISSIONS_BACKGROUND_LOCATION = 103;
+    private int state_request_permision_location = 0;
     private CircleImageView civUsuario;
     private boolean load_images = false; //Control carga imagenes banner y usuario
     private int OPCION_RES_SOCKECT_GPS = 0;//Variable de control para evaluación de respuestas del servidor
     private Button btn_activo = null; //Botón activo en operaciones para control de activación/desactivación
     private ProgressDialog progress_activo = null;//Dialogo de progreso activo, utilizado para inicio/fin ruta
     private NetworkBroadcastReceiver networkBroadcast = new NetworkBroadcastReceiver();
+    private static final String TAG = PrincipalActivity.class.getSimpleName();
+    private boolean mAlreadyStartedService = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,18 +161,13 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
 
         //ImageSwitcher banner footer
         isFooter = findViewById( R.id.isFooter );
-        isFooter.setFactory(new ViewSwitcher.ViewFactory() {
-            @Override
-            public View makeView() {
-                return new ImageView( PrincipalActivity.this );
-            }
-        });
+        isFooter.setFactory(() -> new ImageView( PrincipalActivity.this ));
 
         sharedPref = getSharedPreferences(getString(R.string.key_shared_preferences), Context.MODE_PRIVATE);
 
         //Obtener datos extras enviados en el Intent
         bundle = getIntent().getExtras();
-        id_vehiculo = bundle.getString("id_vehiculo");
+        id_vehiculo = bundle.getString("id_fdv");
         id_ruta = bundle.getString("id_ruta");
         nombre_usuario = bundle.getString("nombre_usuario");
         id_usuario = bundle.getString("id_usuario");
@@ -213,10 +224,19 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
 
             if( !load_images ) {
                 //Descargar imagenes para el footer
-                postParam = new HashMap<>();
-                postParam.put("id_perfil", id_perfil);
-                ConsultarImagenesBannerTask cibt = new ConsultarImagenesBannerTask();
-                cibt.execute(URL_IMAGEN_FOOTER);
+                try
+                {
+                    if (new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)))
+                    {
+                        postParam = new HashMap<>();
+                        postParam.put("id_perfil", id_perfil);
+                        ConsultarImagenesBannerTask cibt = new ConsultarImagenesBannerTask();
+                        cibt.execute(URL_IMAGEN_FOOTER);
+                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
             
             validarInicioInspeccionRuta();
@@ -243,6 +263,247 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
         super.onPause();
         detenerBanner();
     }
+
+    private void startStep1() {
+
+        //Check whether this user has installed Google play service which is being used by Location updates.
+        if (isGooglePlayServicesAvailable()) {
+
+            //Passing null to indicate that it is executing for the first time.
+            startStep2(null);
+
+        } else {
+            Toast.makeText(getApplicationContext(), getString(R.string.txt_google_play_no_disponible), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public boolean isGooglePlayServicesAvailable() {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if (status != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(status)) {
+                googleApiAvailability.getErrorDialog(this, status, 2404).show();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean startStep2(DialogInterface dialog) {
+        /*ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (activeNetworkInfo == null || !activeNetworkInfo.isConnected()) {
+            promptInternetConnect();
+            return false;
+        }*/
+
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+
+        //Yes there is active internet connection. Next check Location is granted by user or not.
+
+        if (checkPermissions()) { //Yes permissions are granted by the user. Go to the next step.
+            startStep3();
+        } else {  //No user has not granted the permissions yet. Request now.
+            requestPermissions();
+        }
+        return true;
+    }
+
+    private void startStep3(){
+
+        //And it will be keep running until you close the entire application from task manager.
+        //This method will executed only once.
+
+        /*       if (mAlreadyStartedService) {*/
+
+        //Start location sharing service to app server.........
+        Intent intent = new Intent(this, LocationMonitoringService.class);
+        startService(intent);
+
+        mAlreadyStartedService = true;
+        //Ends................................................
+        /* }*/
+    }
+
+
+    //-----Gestión de la ubicación y sus permisos---------
+    public boolean checkPermissions()
+    {
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED )
+        {
+            return false;
+        }
+
+        return ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+
+    }
+
+    private void requestPermissions()
+    {
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q )
+        {
+            boolean shouldProvideRationale =
+                    ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+            boolean shouldProvideRationale2 =
+                    ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION);
+
+            boolean shouldProvideRationalBackgroudLocation = ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+
+            if (shouldProvideRationale || shouldProvideRationale2 || shouldProvideRationalBackgroudLocation)
+            {
+                String msg = null;
+                //Permissions para ubiación en tiempo real o mientras el app este en uso
+                if (ActivityCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED
+                        || ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED)
+                {
+                    msg = getString(R.string.msg_use_location);
+
+                }else{ //Permissions para background
+                    msg = getString(R.string.msg_use_location_background);
+                }
+                new Utilidades().mostrarMensajeBotonOK(this,
+                        getString(R.string.txt_acceso_ubicacion),
+                        msg,
+                        getString(R.string.txt_aceptar),
+                        (dialog, which) -> {
+                            setRequestPermission();
+                        });
+            }else{
+                // Request permission. It's possible this can be auto answered if device policy
+                // sets the permission in a given state or the img_user denied the permission
+                // previously and checked "Never ask again".
+                ActivityCompat.requestPermissions(this,
+                        new String[]{
+                                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        },
+                        REQUEST_PERMISSIONS_LOCATION);
+            }
+        }else if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED
+                || ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
+                || ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED
+        )
+        {
+            showMsgLocation(true);
+        }
+    }
+
+    private void showMsgLocation( boolean backgroudLocation )
+    {
+        if( backgroudLocation )
+        {
+            AlertDialog.Builder build;
+            String msg = null;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                build = new AlertDialog.Builder(this);
+            }else{
+                build = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar);
+            }
+
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q )
+            {
+                msg = backgroudLocation
+                        ? getString(R.string.msg_use_location_background)
+                        : getString(R.string.msg_use_location);
+            }else{
+                //Versiones anteiores a Android 10/Q
+                msg = getString(R.string.msg_use_general_location );
+            }
+
+            build.setCancelable(false);
+            build.setTitle( getString(R.string.txt_acceso_ubicacion) );
+            build.setMessage( msg );
+            build.setPositiveButton(getString(R.string.txt_btn_conceder_ubicacion),
+                    (dialog, which) -> setRequestPermission());
+            build.setNegativeButton(getString(R.string.txt_btn_denegar_ubiacion), (dialog, which) -> {
+                dialog.cancel();
+                if( backgroudLocation )
+                {
+                    new Utilidades().mostrarSimpleMensaje(this,
+                            getString(R.string.txt_acceso_ubicacion),
+                            getString( R.string.txt_permission_background_location_denied ),
+                            true);
+                }else{
+                    new Utilidades().mostrarSimpleMensaje(this,
+                            getString(R.string.txt_acceso_ubicacion),
+                            getString( R.string.txt_permission_location_denied ),
+                            true);
+                }
+            });
+            build.show();
+        }else{
+            setRequestPermission();
+        }
+    }
+
+    private void setRequestPermission()
+    {
+        String[] permissions = null;
+        int request_code = 0;
+
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ) {
+            //Permissions para ubiación en tiempo real o mientras el app este en uso
+            if (ActivityCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED
+                    || ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                permissions = new String[]{
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                };
+                request_code = REQUEST_PERMISSIONS_LOCATION;
+            }
+            //Permissions para ubicación en segundo plano
+            else if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED) {
+                permissions = new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION};
+                request_code = REQUEST_PERMISSIONS_BACKGROUND_LOCATION;
+            }
+        }else{
+            //Versiones anteriores a android10/Q
+            permissions = new String[]{
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            };
+            request_code = REQUEST_PERMISSIONS_LOCATION;
+        }
+        state_request_permision_location = request_code;
+        ActivityCompat.requestPermissions(this, permissions, request_code);
+    }
+    private void showSnackbar(final int mainTextStringId, final int actionStringId,
+                              View.OnClickListener listener) {
+        Snackbar.make(
+                findViewById(android.R.id.content),
+                getString(mainTextStringId),
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(getString(actionStringId), listener).show();
+    }
+
+    public int getStateRequestPermisionLocation(){
+        return state_request_permision_location;
+    }
+    //-----Gestión de la ubicación y sus permisos---------
+
 
     @SuppressWarnings("ResourceType")
     @Override
@@ -425,6 +686,7 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
      * */
     public void descargarImagenUsuario()
     {
+        startStep1();
         //Descargar imagen usuario
         Bitmap img_usuario = null;
         if( !img_url_usuario.equals("NULL") )
@@ -1328,6 +1590,53 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
+            case REQUEST_PERMISSIONS_LOCATION:
+                if (grantResults.length <= 0) {
+                    // If img_user interaction was interrupted, the permission request is cancelled and you
+                    // receive empty arrays.
+                    Log.i(TAG, "User interaction was cancelled.");
+                }else if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ) {
+                        requestPermissions(); //solicitar para pasar a Background location
+                    }
+                    startStep3();
+                }else{
+                    // Permission denied.
+                    // Notify the img_user via a SnackBar that they have rejected a core permission for the
+                    // app, which makes the Activity useless. In a real app, core permissions would
+                    // typically be best requested during a welcome-screen flow.
+                    // Additionally, it is important to remember that a permission might have been
+                    // rejected without asking the img_user for permission (device policy or "Never ask
+                    // again" prompts). Therefore, a img_user interface affordance is typically implemented
+                    // when permissions are denied. Otherwise, your app could appear unresponsive to
+                    // touches or interactions which have required permissions.
+                    showSnackbar(R.string.permission_denied_explanation,
+                            R.string.settings, view -> {
+                                // Build intent that displays the App settings screen.
+                                Intent intent = new Intent();
+                                intent.setAction(
+                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package",
+                                        BuildConfig.APPLICATION_ID, null);
+                                intent.setData(uri);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            });
+                }
+                break;
+            case REQUEST_PERMISSIONS_BACKGROUND_LOCATION:
+                if(grantResults[0] == PackageManager.PERMISSION_DENIED)
+                {
+                    new Utilidades().mostrarSimpleMensaje(this,
+                            getString(R.string.txt_acceso_ubicacion),
+                            getString( R.string.txt_permission_background_location_denied ),
+                            true);
+                }else{
+                    startStep3();
+                    validarGPSServicio();
+                }
+                break;
             case PERMISION_REQUEST_CALL_PHONE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     procesarAlerta();
@@ -1335,6 +1644,10 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                     new Utilidades().mostrarSimpleMensaje(this, "Alerta S.O.S.", getString(R.string.txt_msg_permiso_telefono_denegado), true);
                 }
                 return;
+            default:
+                startStep3();
+                validarGPSServicio();
+                break;
         }
     }
 

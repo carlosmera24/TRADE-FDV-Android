@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -21,6 +22,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import co.com.puli.trade.fdv.R;
+import co.com.puli.trade.fdv.database.DatabaseHelper;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -272,5 +274,86 @@ public class Utilidades
             }
         }
         return null;
+    }
+
+    /**
+     * Método encargado de validar si la ruta ha iniciado
+     * @return boolean
+     * */
+    public boolean isRutaIniciada(Context context)
+    {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.key_shared_preferences), Context.MODE_PRIVATE);
+        String fch_ruta = sharedPref.getString("fch_ruta", null);
+        if( fch_ruta != null )
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String fch_actual = sdf.format(Calendar.getInstance().getTime());
+            if( fch_ruta.equals( fch_actual ) )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Método encargado de validar si la ruta ha finalizado
+     * @return boolean
+     * */
+    public boolean isRutaFinalizada( Context context )
+    {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.key_shared_preferences), Context.MODE_PRIVATE);
+        String fch_ruta = sharedPref.getString("fch_ruta", null);
+        if( fch_ruta != null )
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String fch_actual = sdf.format(Calendar.getInstance().getTime());
+            if( fch_ruta.equals( fch_actual ) )
+            {
+                //Validar FIN ruta
+                String str_fin_ruta = sharedPref.getString("fin_ruta", null);
+                if( str_fin_ruta != null &&  str_fin_ruta.equals("SI"))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Método encargado de validar si se requiere actualizar la base de datos local para
+     * el modo offline
+     * @param context
+     * @return
+     */
+    public boolean requireActualizacionOffline( Context context )
+    {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.key_shared_preferences), Context.MODE_PRIVATE);
+        String fch_updated = sharedPref.getString("fch_updated_local_bbdd", null);
+
+        if( fch_updated != null )
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String fch_actual = sdf.format(Calendar.getInstance().getTime());
+            DatabaseHelper databaseHelper = new DatabaseHelper( context );
+
+            if( databaseHelper.getListAlumnosRuta().size() == 0
+                    || databaseHelper.getTiposInspeccionAdapter().size() ==0 )
+            {
+                return true;
+            }
+            if( fch_updated.equals( fch_actual) )
+            {
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+
+        return true;
     }
 }

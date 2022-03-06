@@ -39,6 +39,8 @@ import co.com.puli.trade.fdv.clases.CustomFonts;
 import co.com.puli.trade.fdv.clases.GlobalParametrosGenerales;
 import co.com.puli.trade.fdv.clases.ImageBitMap;
 import co.com.puli.trade.fdv.clases.Utilidades;
+import co.com.puli.trade.fdv.database.DatabaseHelper;
+import co.com.puli.trade.fdv.database.models.Usuario;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,60 +93,33 @@ public class LoginActivity extends AppCompatActivity
 
         ivFooter = findViewById(R.id.imageViewFooter);
 
-        etPass.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if( actionId == EditorInfo.IME_ACTION_DONE )
-                {
-                    //Ocultar teclado
-                    new Utilidades().ocultarTeclado( LoginActivity.this, etPass );
-                    //Iniciar login
-                    iniciarLogin();
-                    return true;
-                }
-                return false;
+        etPass.setOnEditorActionListener((v, actionId, event) -> {
+            if( actionId == EditorInfo.IME_ACTION_DONE )
+            {
+                //Ocultar teclado
+                new Utilidades().ocultarTeclado( LoginActivity.this, etPass );
+                //Iniciar login
+                iniciarLogin();
+                return true;
             }
+            return false;
         });
 
 
         Button btIngreso = findViewById(R.id.btIngreso);
         btIngreso.setTypeface(fuentes.getBoldFont());
-        btIngreso.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                iniciarLogin();
-            }
-        });
+        btIngreso.setOnClickListener(v -> iniciarLogin());
 
         Button btRecordar = findViewById(R.id.btRecordarPas);
         btRecordar.setTypeface( fuentes.getRobotoThinFont() );
 
         Button btCrear = findViewById( R.id.btCrearUsuario );
         btCrear.setTypeface( fuentes.getRobotoThinFont() );
-        btCrear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Abrir actividad para creación de usuario (Registro)
-                Intent intent = new Intent(LoginActivity.this, RegistroActivity.class);
-                startActivity(intent);
-            }
+        btCrear.setOnClickListener(view -> {
+            //Abrir actividad para creación de usuario (Registro)
+            Intent intent = new Intent(LoginActivity.this, RegistroActivity.class);
+            startActivity(intent);
         });
-    }
-
-    /**
-     * Método encargado de validar si hay datos de login del usuario y lanzar el logueo automatico
-     * */
-    public void autoLogin()
-    {
-        String user = sharedPref.getString(KEY_USER, "");
-        String pass = sharedPref.getString(KEY_PASS, "");
-
-        if( !user.equals("") && !pass.equals(""))
-        {
-            etUser.setText( user );
-            etPass.setText( pass );
-            iniciarLogin();
-        }
     }
 
     /**
@@ -164,17 +139,15 @@ public class LoginActivity extends AppCompatActivity
             {
                 etPass.setError( getString( R.string.txt_campo_requerido ) );
             }else{
-                postParam = new HashMap<String,String>();
+                postParam = new HashMap<>();
                 postParam.put("usuario", etUser.getText().toString());
                 postParam.put( "password", etPass.getText().toString() );
-                postParam.put( "perfil", "7" ); //FDV
-                ValidarInicioSessionTask vis = new ValidarInicioSessionTask();
-                vis.execute(URL_LOGIN);
+                postParam.put( "perfil", "7" );
+                new ValidarInicioSessionTask().execute(URL_LOGIN);
             }
         }else{
-            new Utilidades().mostrarSimpleMensaje(this, "Error red", getString(R.string.txt_msg_error_red), true);
+            new Utilidades().mostrarSimpleMensaje(this, getString(R.string.txt_connection), getString(R.string.txt_msg_error_red), true);
         }
-
     }
 
     /**
@@ -343,8 +316,6 @@ public class LoginActivity extends AppCompatActivity
 
 //        img = image.decodificarImagen( getResources(), R.drawable.image_bottom, displaymetrics.widthPixels, 0 );
 //        ivFooter.setImageBitmap(img);
-
-        autoLogin();
     }
 
     @Override
@@ -415,28 +386,47 @@ public class LoginActivity extends AppCompatActivity
                                 startActivity(intent);
                             }else
                             {
-                                //Datos necesarios para enviar como parámetros a otros métodos
-                                JSONObject datos = new JSONObject();
-                                datos.put("id_usuario", result.getString("id_usuario"));
-                                datos.put("id_perfil", result.getString("id_perfil"));
-                                datos.put("usuario", result.getString("usuario"));
-                                datos.put("id_fdv", result.getString("id_fdv"));
-                                datos.put("id_vehiculo", result.getString("id_vehiculo"));
-                                datos.put("id_ruta", result.getString("id_ruta"));
-                                datos.put("nombre_usuario", result.getString("nombre") + " " + result.getString("apellido") );
-                                datos.put("token", result.getString("token"));
-                                datos.put("imagen", result.getString("imagen"));
-                                datos.put("empresa", result.getString("empresa"));
+                                //Registrar datos en la base de datos local
+                                Usuario usuario = new Usuario(
+                                        result.getInt("id_usuario"),
+                                        result.getString("usuario"),
+                                        result.getInt("id_perfil"),
+                                        result.getString("id_fdv"),
+                                        result.getString("id_vehiculo"),
+                                        result.getString("id_ruta"),
+                                        result.getString("nombre") + " " + result.getString("apellido"),
+                                        result.getString("token"),
+                                        result.getString("imagen")
+                                );
 
-                                //Guardar datos de login del usuario
-                                editor.putString(KEY_USER, postParam.get("usuario"));
-                                editor.putString(KEY_PASS, postParam.get("password"));
-                                editor.putString(KEY_ID_USER, result.getString("id_usuario"));
-                                editor.apply();
+                                long id = new DatabaseHelper( getApplicationContext() ).setUsuario( usuario );
 
-                                //Procesar registro del token
-                                progreso.cancel();
-                                registrarTokenDispotivo( datos );
+                                if( id <= 0 )
+                                {
+                                    String fch = sdf.format( Calendar.getInstance().getTime() );
+                                    new Utilidades().mostrarSimpleMensaje(LoginActivity.this,
+                                            getString(R.string.txt_title_error_database),
+                                            fch+"\n"+getString(R.string.txt_msg_error_insert_database_usuario),
+                                            true);
+                                    progreso.cancel();
+                                }else{
+                                    //Datos necesarios para enviar como parámetros a otros métodos
+                                    JSONObject datos = new JSONObject();
+                                    datos.put("id_usuario", result.getString("id_usuario"));
+                                    datos.put("id_perfil", result.getString("id_perfil"));
+                                    datos.put("usuario", result.getString("usuario"));
+                                    datos.put("id_fdv", result.getString("id_fdv"));
+                                    datos.put("id_vehiculo", result.getString("id_vehiculo"));
+                                    datos.put("id_ruta", result.getString("id_ruta"));
+                                    datos.put("nombre_usuario", result.getString("nombre") + " " + result.getString("apellido") );
+                                    datos.put("token", result.getString("token"));
+                                    datos.put("imagen", result.getString("imagen"));
+                                    datos.put("empresa", result.getString("empresa"));
+
+                                    //Procesar registro del token
+                                    progreso.cancel();
+                                    registrarTokenDispotivo( datos );
+                                }
                             }
                             break;
                         case "ERROR":
@@ -533,15 +523,12 @@ public class LoginActivity extends AppCompatActivity
                                                                     "Registro token",
                                                                     fch + "\n" + getString(R.string.txt_msg_error_registro_token_bd),
                                                                     getString(R.string.txt_reintentar),
-                                                                    new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            RegistrarTokenBDTask rtbd = new RegistrarTokenBDTask( datos );
-                                                                            //Los parametros deben estar en memoria en este punto
-                                                                            rtbd.execute( URL_REGISTRO_TOKEN );
-                                                                        }
-                                                                    }
-                                                            );
+                                (dialog, which) -> {
+                                    RegistrarTokenBDTask rtbd = new RegistrarTokenBDTask( datos );
+                                    //Los parametros deben estar en memoria en este punto
+                                    rtbd.execute( URL_REGISTRO_TOKEN );
+                                }
+                        );
                         progreso.cancel();
                     }
                 }else if( estado_ce.equals("ERROR") )
@@ -555,15 +542,12 @@ public class LoginActivity extends AppCompatActivity
                                                                     "Registro token",
                                                                     fch + "\n" + getString(R.string.txt_msg_error_tiempo_conexion),
                                                                     getString(R.string.txt_reintentar),
-                                                                    new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            RegistrarTokenBDTask rtbd = new RegistrarTokenBDTask( datos );
-                                                                            //Los parametros deben estar en memoria en este punto
-                                                                            rtbd.execute( URL_REGISTRO_TOKEN );
-                                                                        }
-                                                                    }
-                                                            );
+                                (dialog, which) -> {
+                                    RegistrarTokenBDTask rtbd = new RegistrarTokenBDTask( datos );
+                                    //Los parametros deben estar en memoria en este punto
+                                    rtbd.execute( URL_REGISTRO_TOKEN );
+                                }
+                        );
                     }else{
                         String fch = sdf.format( Calendar.getInstance().getTime() );
                         new Utilidades().mostrarMensajeBotonOK(
@@ -571,15 +555,12 @@ public class LoginActivity extends AppCompatActivity
                                                                     "Registro token",
                                                                     fch + "\n" + getString(R.string.txt_msg_error_consulta),
                                                                     getString(R.string.txt_reintentar),
-                                                                    new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            RegistrarTokenBDTask rtbd = new RegistrarTokenBDTask( datos );
-                                                                            //Los parametros deben estar en memoria en este punto
-                                                                            rtbd.execute( URL_REGISTRO_TOKEN );
-                                                                        }
-                                                                    }
-                                                            );
+                                (dialog, which) -> {
+                                    RegistrarTokenBDTask rtbd = new RegistrarTokenBDTask( datos );
+                                    //Los parametros deben estar en memoria en este punto
+                                    rtbd.execute( URL_REGISTRO_TOKEN );
+                                }
+                        );
                         Log.e("ErrorConsulta", "LoginActivity.RegistrarTokenBDTask.onPostExecute:" + result.getString("code"));
                     }
                 }
@@ -633,10 +614,10 @@ public class LoginActivity extends AppCompatActivity
                     {
                         //Registrar los parametros generales descargados
                         JSONArray param = result.getJSONArray("parametros");
-                        GlobalParametrosGenerales parametros = (GlobalParametrosGenerales) getApplicationContext();
-                        parametros.setParametros( param );
+                        new DatabaseHelper(getApplicationContext()).setParametros( param );
+                        progreso.cancel();
                         //Consultar RutaGramas
-                        ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos, parametros);
+                        ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos);
                         crgt.execute( URL_RUTAGRAMAS );
                     }else if( estado.equals("ERROR") )
                     {
@@ -646,13 +627,8 @@ public class LoginActivity extends AppCompatActivity
                                                                     "Parámetros generales",
                                                                     fch + "\n" + getString(R.string.txt_msg_error_consulta_parametros),
                                                                     getString(R.string.txt_reintentar),
-                                                                    new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            consultarParametrosGenerales( datos );
-                                                                        }
-                                                                    }
-                                                            );
+                                (dialog, which) -> consultarParametrosGenerales( datos )
+                        );
                     }
                 }else if( estado_ce.equals("ERROR") )
                 {
@@ -664,13 +640,8 @@ public class LoginActivity extends AppCompatActivity
                                                                     "Parámetros generales",
                                                                     fch + "\n" + getString(R.string.txt_msg_error_tiempo_conexion),
                                                                     getString(R.string.txt_reintentar),
-                                                                    new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            consultarParametrosGenerales( datos );
-                                                                        }
-                                                                    }
-                                                            );
+                                (dialog, which) -> consultarParametrosGenerales( datos )
+                        );
                     }else{
                         String fch = sdf.format( Calendar.getInstance().getTime() );
                         new Utilidades().mostrarMensajeBotonOK(
@@ -678,13 +649,8 @@ public class LoginActivity extends AppCompatActivity
                                                                     "Parámetros generales",
                                                                     fch + "\n" + getString(R.string.txt_msg_error_consulta),
                                                                     getString(R.string.txt_reintentar),
-                                                                    new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            consultarParametrosGenerales( datos );
-                                                                        }
-                                                                    }
-                                                            );
+                                (dialog, which) -> consultarParametrosGenerales( datos )
+                        );
                         Log.e("ErrorConsulta", "LoginActivity.ConsultarParametrosGeneralesTask.onPostExecute: " + result.getString("code"));
                     }
                 }
@@ -718,12 +684,10 @@ public class LoginActivity extends AppCompatActivity
     {
         ProgressDialog progreso;
         JSONObject datos;
-        GlobalParametrosGenerales parametros;
 
-        public ConsultarRutaGramasTask( JSONObject datos, GlobalParametrosGenerales parametros)
+        public ConsultarRutaGramasTask( JSONObject datos)
         {
             this.datos = datos;
-            this.parametros = parametros;
         }
 
         @Override
@@ -755,19 +719,20 @@ public class LoginActivity extends AppCompatActivity
                     {
                         //Registrar los parametros generales descargados
                         JSONArray rutagramas = result.getJSONArray("rutagramas");
-                        parametros.setRutaGramas( rutagramas );
+                        new DatabaseHelper(getApplicationContext()).setRutaGramas( rutagramas );
 
                         //Guardar los datos de la empresa
                         JSONObject empresa = new JSONObject();
                         empresa.put("nombre", datos.getString("empresa") );
                         empresa.put("lat", 0.0 );
                         empresa.put("lng", 0.0 );
+                        GlobalParametrosGenerales parametros = new GlobalParametrosGenerales();
                         parametros.setEmpresa( empresa );
 
                         //Consultar fecha de inspección vehículo
                         postParam = new HashMap<>();
                         postParam.put("id_fdv", datos.getString("id_fdv") );
-                        ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos, parametros);
+                        ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos);
                         cfit.execute( URL_FECHA_INSPECCION );
                     }else if( estado.equals("ERROR") )
                     {
@@ -777,14 +742,11 @@ public class LoginActivity extends AppCompatActivity
                                                                     "Rutagramas",
                                                                     fch + "\n" + getString(R.string.txt_msg_error_consulta_parametros),
                                                                     getString(R.string.txt_reintentar),
-                                                                    new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos, parametros);
-                                                                            crgt.execute( URL_RUTAGRAMAS );
-                                                                        }
-                                                                    }
-                                                            );
+                                (dialog, which) -> {
+                                    ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos);
+                                    crgt.execute( URL_RUTAGRAMAS );
+                                }
+                        );
                     }
                 }else if( estado_ce.equals("ERROR") )
                 {
@@ -796,14 +758,11 @@ public class LoginActivity extends AppCompatActivity
                                                                         "Rutagramas",
                                                                         fch + "\n" + getString(R.string.txt_msg_error_tiempo_conexion),
                                                                         getString(R.string.txt_reintentar),
-                                                                        new DialogInterface.OnClickListener() {
-                                                                            @Override
-                                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                                ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos, parametros);
-                                                                                crgt.execute( URL_RUTAGRAMAS );
-                                                                            }
-                                                                        }
-                                                                );
+                                (dialog, which) -> {
+                                    ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos);
+                                    crgt.execute( URL_RUTAGRAMAS );
+                                }
+                        );
                     }else{
                         String fch = sdf.format( Calendar.getInstance().getTime() );
                         new Utilidades().mostrarMensajeBotonOK(
@@ -811,14 +770,11 @@ public class LoginActivity extends AppCompatActivity
                                                                         "Rutagramas",
                                                                         fch + "\n" + getString(R.string.txt_msg_error_consulta),
                                                                         getString(R.string.txt_reintentar),
-                                                                        new DialogInterface.OnClickListener() {
-                                                                            @Override
-                                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                                ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos, parametros);
-                                                                                crgt.execute( URL_RUTAGRAMAS );
-                                                                            }
-                                                                        }
-                                                                );
+                                (dialog, which) -> {
+                                    ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos);
+                                    crgt.execute( URL_RUTAGRAMAS );
+                                }
+                        );
                         Log.e("ErrorConsulta", "LoginActivity.ConsultarRutaGramasTask.onPostExecute: " + result.getString("code"));
                     }
                 }
@@ -834,12 +790,9 @@ public class LoginActivity extends AppCompatActivity
                         "Rutagramas",
                         fch + "\n" + getString(R.string.txt_msg_error_consulta),
                         getString(R.string.txt_reintentar),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos, parametros);
-                                crgt.execute( URL_RUTAGRAMAS );
-                            }
+                        (dialog, which) -> {
+                            ConsultarRutaGramasTask crgt = new ConsultarRutaGramasTask(datos);
+                            crgt.execute( URL_RUTAGRAMAS );
                         }
                 );
             }
@@ -854,12 +807,10 @@ public class LoginActivity extends AppCompatActivity
     {
         ProgressDialog progreso;
         JSONObject datos;
-        GlobalParametrosGenerales parametros;
 
-        public ConsultarFechaInspeccionTask( JSONObject datos, GlobalParametrosGenerales parametros)
+        public ConsultarFechaInspeccionTask( JSONObject datos)
         {
             this.datos = datos;
-            this.parametros = parametros;
         }
 
         @Override
@@ -889,13 +840,18 @@ public class LoginActivity extends AppCompatActivity
                 {
                     String estado = result.getString("estado"); //Estado WebServices
                     PackageInfo packageInfo = getPackageManager().getPackageInfo( getPackageName(), 0);
-                    RegistrarDatosLoginTask rdlt = new RegistrarDatosLoginTask( datos, parametros);
+                    RegistrarDatosLoginTask rdlt = new RegistrarDatosLoginTask( datos);
                     String strSO = String.format("Android %s %s", new Utilidades().getNombreVersionAndroid(), Build.VERSION.RELEASE );
                     switch(estado)
                     {
                         case "OK":
-                            //Registrar los parametros generales descargados
-                            parametros.setFecha_inspeccion( result.getString("fecha_date") );
+                            //Registrar fecha inspección
+                            SharedPreferences sharedPref = getSharedPreferences(getString(R.string.key_shared_preferences), Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putString("fch_inspeccion", result.getString("fecha_date") );
+                            editor.apply();
+
+                            progreso.cancel();
                             //Registrar datos del login
                             postParam = new HashMap<>();
                             postParam.put("id_usuario", datos.getString("usuario") );
@@ -904,6 +860,7 @@ public class LoginActivity extends AppCompatActivity
                             rdlt.execute( URL_DATOS_LOGIN );
                             break;
                         case "EMPTY":
+                            progreso.cancel();
                             //Registrar datos del login
                             postParam = new HashMap<>();
                             postParam.put("id_usuario", datos.getString("usuario") );
@@ -912,55 +869,49 @@ public class LoginActivity extends AppCompatActivity
                             rdlt.execute( URL_DATOS_LOGIN );
                             break;
                         case "ERROR":
+                            progreso.cancel();
                             String fch = sdf.format( Calendar.getInstance().getTime() );
                             new Utilidades().mostrarMensajeBotonOK(
                                                                         LoginActivity.this,
                                                                         "Inspección previa",
                                                                         fch + "\n" + getString(R.string.txt_msg_error_consulta_fecha_inspeccion_previa),
                                                                         getString(R.string.txt_reintentar),
-                                                                        new DialogInterface.OnClickListener() {
-                                                                            @Override
-                                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                                ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos, parametros);
-                                                                                cfit.execute( URL_FECHA_INSPECCION );
-                                                                            }
-                                                                        }
-                                                                );
+                                    (dialog, which) -> {
+                                        ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos);
+                                        cfit.execute( URL_FECHA_INSPECCION );
+                                    }
+                            );
                             break;
                     }
                 }else if( estado_ce.equals("ERROR") )
                 {
                     if( result.getInt("code") == 102 ) //Tiempo de consulta superado
                     {
+                        progreso.cancel();
                         String fch = sdf.format( Calendar.getInstance().getTime() );
                         new Utilidades().mostrarMensajeBotonOK(
                                                                     LoginActivity.this,
                                                                     "Inspección previa",
                                                                     fch + "\n" + getString(R.string.txt_msg_error_tiempo_conexion),
                                                                     getString(R.string.txt_reintentar),
-                                                                    new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos, parametros);
-                                                                            cfit.execute( URL_FECHA_INSPECCION );
-                                                                        }
-                                                                    }
-                                                            );
+                                (dialog, which) -> {
+                                    ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos);
+                                    cfit.execute( URL_FECHA_INSPECCION );
+                                }
+                        );
                     }else{
+                        progreso.cancel();
                         String fch = sdf.format( Calendar.getInstance().getTime() );
                         new Utilidades().mostrarMensajeBotonOK(
                                                                     LoginActivity.this,
                                                                     "Inspección previa",
                                                                     fch + "\n" + getString(R.string.txt_msg_error_consulta),
                                                                     getString(R.string.txt_reintentar),
-                                                                    new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos, parametros);
-                                                                            cfit.execute( URL_FECHA_INSPECCION );
-                                                                        }
-                                                                    }
-                                                            );
+                                (dialog, which) -> {
+                                    ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos);
+                                    cfit.execute( URL_FECHA_INSPECCION );
+                                }
+                        );
                         Log.e("ErrorConsulta", "LoginActivity.ConsultarFechaInspeccionTask.onPostExecute: " + result.getString("code"));
                     }
                 }
@@ -977,12 +928,9 @@ public class LoginActivity extends AppCompatActivity
                         "Inspección previa",
                         fch + "\n" + getString(R.string.txt_msg_error_consulta_fecha_inspeccion_previa),
                         getString(R.string.txt_reintentar),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos, parametros);
-                                cfit.execute( URL_FECHA_INSPECCION );
-                            }
+                        (dialog, which) -> {
+                            ConsultarFechaInspeccionTask cfit = new ConsultarFechaInspeccionTask(datos);
+                            cfit.execute( URL_FECHA_INSPECCION );
                         }
                 );
             }
@@ -996,12 +944,10 @@ public class LoginActivity extends AppCompatActivity
     {
         ProgressDialog progreso;
         JSONObject datos;
-        GlobalParametrosGenerales parametros;
 
-        public RegistrarDatosLoginTask( JSONObject datos, GlobalParametrosGenerales parametros)
+        public RegistrarDatosLoginTask( JSONObject datos)
         {
             this.datos = datos;
-            this.parametros = parametros;
         }
 
         @Override
@@ -1041,12 +987,9 @@ public class LoginActivity extends AppCompatActivity
                                 "Registro datos login",
                                 fch + "\n" + getString(R.string.txt_msg_error_registro_datos_login),
                                 getString(R.string.txt_reintentar),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        RegistrarDatosLoginTask cct = new RegistrarDatosLoginTask(datos, parametros);
-                                        cct.execute( URL_DATOS_LOGIN );
-                                    }
+                                (dialog, which) -> {
+                                    RegistrarDatosLoginTask cct = new RegistrarDatosLoginTask(datos);
+                                    cct.execute( URL_DATOS_LOGIN );
                                 }
                         );
                     }
@@ -1060,12 +1003,9 @@ public class LoginActivity extends AppCompatActivity
                                 "Colegio",
                                 fch + "\n" + getString(R.string.txt_msg_error_tiempo_conexion),
                                 getString(R.string.txt_reintentar),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        RegistrarDatosLoginTask cct = new RegistrarDatosLoginTask(datos, parametros);
-                                        cct.execute( URL_DATOS_LOGIN );
-                                    }
+                                (dialog, which) -> {
+                                    RegistrarDatosLoginTask cct = new RegistrarDatosLoginTask(datos);
+                                    cct.execute( URL_DATOS_LOGIN );
                                 }
                         );
                     }else{
@@ -1075,12 +1015,9 @@ public class LoginActivity extends AppCompatActivity
                                 "Colegio",
                                 fch + "\n" + getString(R.string.txt_msg_error_consulta),
                                 getString(R.string.txt_reintentar),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        RegistrarDatosLoginTask cct = new RegistrarDatosLoginTask(datos, parametros);
-                                        cct.execute( URL_DATOS_LOGIN );
-                                    }
+                                (dialog, which) -> {
+                                    RegistrarDatosLoginTask cct = new RegistrarDatosLoginTask(datos);
+                                    cct.execute( URL_DATOS_LOGIN );
                                 }
                         );
                         Log.e("ErrorConsulta", "LoginActivity.ConsultarColegioTask.onPostExecute: " + result.getString("code"));
@@ -1098,12 +1035,9 @@ public class LoginActivity extends AppCompatActivity
                         "Colegio",
                         fch + "\n" + getString(R.string.txt_msg_error_consulta),
                         getString(R.string.txt_reintentar),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                RegistrarDatosLoginTask cct = new RegistrarDatosLoginTask(datos, parametros);
-                                cct.execute( URL_DATOS_LOGIN );
-                            }
+                        (dialog, which) -> {
+                            RegistrarDatosLoginTask cct = new RegistrarDatosLoginTask(datos);
+                            cct.execute( URL_DATOS_LOGIN );
                         }
                 );
             }

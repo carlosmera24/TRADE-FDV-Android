@@ -1,15 +1,28 @@
 <resources>
-    <string name="app_name">TRADE FDV</string>
-
-    <string name="url_server_backend">http://plataforma.puli.com.co:8080/backend-trade/</string>
-    <string name="url_server_backend_web">http://plataforma.puli.com.co/querys/</string>
-    <string name="url_server_images">http://plataforma.puli.com.co/images/</string>
-    <string name="url_server">plataforma.puli.com.co</string>
-    <string name="url_server_tiles_map_osm">http://plataforma.puli.com.co/osm_tiles/</string>
+    <string name="app_name" translatable="false">TRADE FDV</string>
+    <string name="url_server_backend" translatable="false">http://plataforma.puli.com.co:8080/backend-trade/</string>
+    <string name="url_server_backend_web" translatable="false">http://plataforma.puli.com.co/querys/</string>
+    <string name="url_server_images" translatable="false">http://plataforma.puli.com.co/images/</string>
+    <string name="url_server" translatable="false">plataforma.puli.com.co</string>
+    <string name="url_server_tiles_map_osm" translatable="false">http://plataforma.puli.com.co/osm_tiles/</string>
+    <string name="key_shared_preferences" translatable="false">VncTr@!32OIs</string>
+    <string name="txt_in" translatable="false">In</string>
+    <string name="txt_out" translatable="false">Out</string>
+    <string name="txt_x" translatable="false">AUS</string>
+    <string name="txt_nov" translatable="false">NOV</string>
+    <string name="txt_chat" translatable="false">Chat</string>
+    <string name="txt_number_cero" translatable="false">0</string>
+    <string name="txt_titulo_dialog_check" translatable="false">Check PDV</string>
+    <string name="txt_administradores" translatable="false">Admons</string>
+    <string name="txt_fecha_placeholder" translatable="false">DD MMM AAAA</string>
+    <string name="txt_hora_placeholder" translatable="false">HH:MM AM/PM</string>
+    <string name="channel_id_default" translatable="false">PULI-Notification-2019</string>
+    <string name="channel_name" translatable="false">PULI-Notification-Channel</string>
+    <string name="noti_channel_default" translatable="false">Primary Channel</string>
 
     <string name="title_activity_maps">Map</string>
-    <string name="txt_descripcion_imagen_footer">TRADE Footer</string>
-    <string name="txt_descripcion_logo">TRADE Logo</string>
+    <string name="txt_descripcion_imagen_footer" translatable="false">TRADE Footer</string>
+    <string name="txt_descripcion_logo" translatable="false">TRADE Logo</string>
     <string name="txt_iniciar_ruta">Iniciar Visitas</string>
     <string name="txt_inspeccion_previa">Protocolo de alistamiento</string>
     <string name="txt_fin_ruta">Finalizar Visita</string>
@@ -55,13 +68,8 @@
     <string name="txt_msg_error_red">Por favor verifique su conexión a Internet y vuelva a intentarlo</string>
     <string name="txt_msg_error_red_gps">Por favor verifique su conexión a Internet, no es posible registrar la actualización de su posción actual.</string>
     <string name="txt_msg_error_tiempo_conexion">Se presentó un error en la conexión, tiempo límite superado, por favor verifique su conexión y vuelva a intentarlo</string>
-    <string name="key_shared_preferences">VncTr@!32OIs</string>
     <string name="txt_msg_error_id_vehiculo">Lo sentimos, no es posible obtener el ID del vehículo</string>
     <string name="txt_msg_error_id_ruta">Lo sentimos, no es posible obtener el ID del PDV</string>
-    <string name="txt_in">In</string>
-    <string name="txt_out">Out</string>
-    <string name="txt_x">AUS</string>
-    <string name="txt_nov">NOV</string>
     <string name="txt_lista_pasajeros">Lista</string>
     <string name="txt_consulta_lista_pdv">Consultando lista de PDV&#8230;</string>
     <string name="txt_msg_lista_pdv_vacia">No tiene PDV asignados para su visita en el día de hoy.</string>
@@ -75,11 +83,9 @@
     <string name="txt_msg_gps_error">Se ha presentado un error al detectar tu ubicación, por favor asegurese de habilitar el uso del GPS y el uso de tu ubicación</string>
     <string name="txt_configurar">Configurar</string>
     <string name="txt_cancelar">Cancelar</string>
-    <string name="txt_number_cero">0</string>
     <string name="txt_label_empresa">Empresa:</string>
     <string name="txt_mensajes">Mensajes</string>
     <string name="txt_alertas">Alertas</string>
-    <string name="txt_chat">Chat</string>
     <string name="txt_control_pdv">Control PDV</string>
     <string name="txt_agendamiento">Agendamiento</string>
     <string name="txt_cerrar_sesion">Cerrar sesión</string>
@@ -107,11 +113,10 @@
     <string name="txt_registro_alerta">Registrando nueva alerta&#8230;</string>
     <string name="txt_registro_alerta_ok">Nueva alerta registrada con éxito.</string>
     <string name="txt_msg_alertas_empty">Lo sentimos, no posee un grupo asignado para el registro de alertas.</string>
-    <string name="txt_titulo_dialog_check">Check PDV</string>
+
     <string name="txt_registro_check">Registrando Check punto de venta&#8230;</string>
     <string name="txt_consultar_usuarios_chat">Consultado usuarios&#8230;</string>
     <string name="txt_msg_usuarios_chat_vacios">No hay usuarios disponibles para el Chat</string>
-    <string name="txt_administradores">Admons</string>
     <string name="txt_padres">Padres</string>
     <string name="txt_msg_titulo_cerrar_sesion">Cerrar sesión</string>
     <string name="txt_msg_cerrar_sesion">Su sesión se cerrará. ¿Desea continuar?.</string>
@@ -172,8 +177,6 @@
     <string name="txt_msg_lista_padres_vacios">No se encontraron padres asociados a su ruta.</string>
     <string name="txt_datepicker_titulo">Seleccionar fecha</string>
     <string name="txt_timepicker_titulo">Seleccionar hora</string>
-    <string name="txt_fecha_placeholder">DD MMM AAAA</string>
-    <string name="txt_hora_placeholder">HH:MM AM/PM</string>
     <string name="txt_registro_solicitud_cita">Enviando solicitud de cita&#8230;</string>
     <string name="txt_registro_solicitud_cita_ok">Solicitud de cita enviada con éxito</string>
     <string name="txt_seleccionar_multimedia">Seleccionar multimedia</string>
@@ -252,8 +255,27 @@
     <string name="txt_consulta_notificaciones">Consultando notificaciones&#8230;</string>
     <string name="txt_notificaciones">Notificaciones</string>
     <string name="txt_error_llamada">Lo sentimos, no es posible realizar la llamada al contacto error:</string>
-    <string name="channel_id_default">PULI-Notification-2019</string>
-    <string name="channel_name">PULI-Notification-Channel</string>
     <string name="channel_description">Canal de notificaciones por defecto para el APP PULI, utilizado para configurar la recepción de notificaciones FCM</string>
     <string name="txt_msg_error_token_fcm">Ocurrió un problema al obtener el TOKEN del dispositivo en el servidor FCM, el APP continuará pero no se podrán recibir notificaciones</string>
+    <string name="txt_connection">"    Connection"</string>
+    <string name="txt_title_error_database">Error Database</string>
+    <string name="txt_msg_error_insert_database_usuario">Sorry, an error occurred while re-registering user data to the local database.</string>
+    <string name="txt_google_play_no_disponible">No Google Playservice available</string>
+    <string name="msg_use_location">TRADE FDV collects location data to enable the visualization of its location in real time on the main map, continuously report the status of the route and its location, record of news and alerts to support if required, while the app is in use, , even while the app is in the background or closed.</string>
+    <string name="msg_use_location_background">TRADE FDV collects data about your location in the background or while the app is not running to continuously report the status of the route and its location, we invite you to enable the use of location all the time.</string>
+    <string name="txt_acceso_ubicacion">Access to your location</string>
+    <string name="msg_use_general_location" >TRADE FDV collects your location data to enable the visualization of your location in real time on the main map, continuously report the status of the route and its location, record news and alerts to provide support if required, while the app is in use, even while the app is in the background or closed.</string>
+    <string name="txt_btn_conceder_ubicacion">Grant Location</string>
+    <string name="txt_btn_denegar_ubiacion">Deny Location</string>
+    <string name="txt_permission_background_location_denied">Permissions for background location have been denied, the application will not be able to access your location while in the background, you can change the permissions in the TRADE FDV configuration whenever you want.</string>
+    <string name="txt_permission_location_denied">Location permissions have been denied, you can enable it in the TRADE FDV permission settings whenever you want.</string>
+    <string name="permission_denied_explanation">You have not granted location permission. So the service cannot be started.</string>
+    <string name="settings">settings</string>
+    <string name="txt_vehiculo_ubicacion">Vehicle Location</string>
+    <string name="txt_actualizando_ubicacion" >Location Updating</string>
+    <string name="txt_configure_gps">Configure GPS</string>
+    <string name="txt_msg_error_insert_database_mvto_ruta">Sorry, there was a problem recording the movement of the route in the local database.</string>
+    <string name="warning">Warning</string>
+
+
 </resources>

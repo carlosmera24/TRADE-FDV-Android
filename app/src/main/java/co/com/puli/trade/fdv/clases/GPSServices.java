@@ -25,6 +25,8 @@ import android.util.Log;
 
 import co.com.puli.trade.fdv.R;
 import co.com.puli.trade.fdv.actividades.PrincipalActivity;
+import co.com.puli.trade.fdv.database.DatabaseHelper;
+import co.com.puli.trade.fdv.database.models.MvtoRastreo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -216,6 +218,16 @@ public class GPSServices extends Service implements LocationListener
             {
                 //Obtener ubicación desde NetWork
                 if ( NetWorkEnabled ) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
                     lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_UPDATE, MIN_DISTANCE_UPDATE, this);
                     if (lm != null) {
                         location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -402,7 +414,7 @@ public class GPSServices extends Service implements LocationListener
     public boolean isCanGetLocation()
     {
         //Validar si es android M o superior
-        if( Build.VERSION.SDK_INT >= M )
+        /*if( Build.VERSION.SDK_INT >= M )
         {
             //Validar permisos de ubicacipon
            if(ContextCompat.checkSelfPermission( activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED )
@@ -410,7 +422,7 @@ public class GPSServices extends Service implements LocationListener
                //Solicitar permiso de ubicación
                ActivityCompat.requestPermissions( activity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
            }
-        }
+        }*/
 
         lm = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
         GPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -467,43 +479,56 @@ public class GPSServices extends Service implements LocationListener
     /**
      * Método encargado de notificar el cambio de posición para el registro del rastreo
      * */
-    public void notificarUbicacionRastreo( Location ubicacion )
-    {
-        //Verificar disponibilidad de Red
-        if( new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)) )
+    public void notificarUbicacionRastreo(Location ubicacion) {
+        if( ubicacion != null && new Utilidades().isRutaIniciada( activity.getApplicationContext() )
+                && !new Utilidades().isRutaFinalizada( activity.getApplicationContext() ) )
         {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            //verificar si hay conexión con el socket y se puede enviar mensajes por el mismo
-            if( conectadoSocket() && puedeSocketEnviarMensajes() )//Enviar mensaje utilizando el socket
-            {
-                try {
-                    JSONObject msg = new JSONObject();
-                    msg.put("id_ruta", id_ruta);
-                    msg.put("fecha", sdf.format(Calendar.getInstance().getTime()));
-                    msg.put("lat", "" + ubicacion.getLatitude());
-                    msg.put("lng", "" + ubicacion.getLongitude());
-                    msg.put("tipo", "MVTO");
-                    msg.put("guardar_bbdd", "YES");
-                    msg.put("enviar_notif", "YES");
-                    enviarMensajeSocket(msg);
-                } catch (JSONException e) {
-                    Log.e("JSONException", "GPSServices.notificarUbicacionRastreo.JSONException:" + e.toString());
+            //Verificar disponibilidad de Red
+            if (new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))) {
+                //verificar si hay conexión con el socket y se puede enviar mensajes por el mismo
+                if (conectadoSocket() && puedeSocketEnviarMensajes())//Enviar mensaje utilizando el socket
+                {
+                    try {
+                        JSONObject msg = new JSONObject();
+                        msg.put("id_ruta", id_ruta);
+                        msg.put("fecha", sdf.format(Calendar.getInstance().getTime()));
+                        msg.put("lat", "" + ubicacion.getLatitude());
+                        msg.put("lng", "" + ubicacion.getLongitude());
+                        msg.put("tipo", "MVTO");
+                        msg.put("guardar_bbdd", "YES");
+                        msg.put("enviar_notif", "YES");
+                        enviarMensajeSocket(msg);
+                    } catch (JSONException e) {
+                        Log.e("JSONException", "GPSServices.notificarUbicacionRastreo.JSONException:" + e.toString());
+                    }
+                } else //Registrar el movimiento utilizando el WebServices
+                {
+                    //Registrar Movimiento Rastreo
+                    postParam = new HashMap<>();
+                    postParam.put("lat", "" + ubicacion.getLatitude());
+                    postParam.put("lng", "" + ubicacion.getLongitude());
+                    postParam.put("fecha", sdf.format(Calendar.getInstance().getTime()));
+                    postParam.put("id_ruta", id_ruta);
+
+                    RegistrarMvtoRuta irt = new RegistrarMvtoRuta();
+                    irt.execute(URL_REGISTRO_RASTREO);
                 }
-            }else //Registrar el movimiento utilizando el WebServices
-            {
-                //Registrar Movimiento Rastreo
-                postParam = new HashMap<>();
-                postParam.put("lat", "" + location.getLatitude());
-                postParam.put("lng", "" + location.getLongitude());
-                postParam.put("fecha", sdf.format(Calendar.getInstance().getTime()));
-                postParam.put("id_ruta", id_ruta);
+            } else {
+                long id = new DatabaseHelper(getActividadActual().getApplicationContext())
+                        .setMvtoRastreo(new MvtoRastreo(
+                                ubicacion.getLatitude(),
+                                ubicacion.getLongitude(),
+                                sdf.format(Calendar.getInstance().getTime()),
+                                id_ruta
+                        ));
 
-                RegistrarMvtoRuta irt = new RegistrarMvtoRuta();
-                irt.execute( URL_REGISTRO_RASTREO );
+                if (id <= 0) {
+                    new Utilidades().mostrarSimpleMensaje(this, getString(R.string.txt_title_error_database),
+                            getString(R.string.txt_msg_error_insert_database_mvto_ruta),
+                            true);
+                }
             }
-        }else{
-
-            mostrarDialogoErrorRed();
         }
     }
 
