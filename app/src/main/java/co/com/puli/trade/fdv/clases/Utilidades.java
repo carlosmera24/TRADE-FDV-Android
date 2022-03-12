@@ -340,7 +340,7 @@ public class Utilidades
             String fch_actual = sdf.format(Calendar.getInstance().getTime());
             DatabaseHelper databaseHelper = new DatabaseHelper( context );
 
-            if( databaseHelper.getListAlumnosRuta().size() == 0
+            if( databaseHelper.getListPDVsRuta( databaseHelper.getUsuario().getId_fdv() ).size() == 0
                     || databaseHelper.getTiposInspeccionAdapter().size() ==0 )
             {
                 return true;

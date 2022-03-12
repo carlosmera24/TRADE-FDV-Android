@@ -158,7 +158,6 @@
     <string name="txt_registro_solicitud_cita">Enviando solicitud de cita&#8230;</string>
     <string name="txt_registro_solicitud_cita_ok">Solicitud de cita enviada con éxito</string>
     <string name="txt_seleccionar_multimedia">Seleccionar multimedia</string>
-    <string name="txt_multimedia">Multimedia</string>
     <string name="txt_enviar">Enviar</string>
     <string name="txt_registrar_multimedia">Enviando archivo&#8230;</string>
     <string name="txt_seleccionar_fecha">Seleccionar fecha</string>
@@ -210,7 +209,6 @@
     <string name="txt_producto">Producto</string>
     <string name="txt_cantidad_exhibidos">Cant. Exhibidos</string>
     <string name="txt_cantidad_pedido">Cant. Pedido</string>
-    <string name="_0">0</string>
     <string name="txt_consulta_productos">Consultando productos&#8230;</string>
     <string name="txt_msg_productos_vacios">No se encontraron productos relacionados para la empresa.</string>
     <string name="txt_msg_cancelar_control_pdv">¿Desea cancelar la captura de productos exhibidos para el PDV? no se podrá activar nuevamente.</string>
@@ -235,10 +233,10 @@
     <string name="txt_error_llamada">Lo sentimos, no es posible realizar la llamada al contacto error:</string>
     <string name="channel_description">Canal de notificaciones por defecto para el APP PULI, utilizado para configurar la recepción de notificaciones FCM</string>
     <string name="txt_msg_error_token_fcm">Ocurrió un problema al obtener el TOKEN del dispositivo en el servidor FCM, el APP continuará pero no se podrán recibir notificaciones</string>
-    <string name="txt_connection">"    Connection"</string>
-    <string name="txt_title_error_database">Error Database</string>
-    <string name="txt_msg_error_insert_database_usuario">Sorry, an error occurred while re-registering user data to the local database.</string>
-    <string name="txt_google_play_no_disponible">No Google Playservice available</string>
+    <string name="txt_connection">Conexión</string>
+    <string name="txt_title_error_database">Error Base de Datos</string>
+    <string name="txt_msg_error_insert_database_usuario">Lo sentimos, ocurrió un error al registrar los datos del usuario en la base de datos local.</string>
+    <string name="txt_google_play_no_disponible">Google Playservice no disponible</string>
     <string name="msg_use_location">TRADE FDV recopila datos de ubicación para habilitar la visualización de su ubicación en tiempo real en el mapa principal, reportar de forma continua el estado de la ruta y su ubicación, registro de novedades y las alertas para dar soporte en caso de requerirlo, mientras el app este en uso, incluso mientras el app está  segundo plano o cerrada.</string>
     <string name="msg_use_location_background">TRADE FDV recopila datos de tu ubicación en segundo plano o mientras el app no se ejecuta para reportar de forma continua el estado de la ruta y su ubicación, te invitamos a habilitar el uso de la ubicación todo el tiempo.</string>
     <string name="txt_acceso_ubicacion">Acceso a tu ubicación</string>
@@ -254,5 +252,22 @@
     <string name="txt_configure_gps">Configurar GPS</string>
     <string name="txt_msg_error_insert_database_mvto_ruta">Lo sentimos, ocurrió un problea al registrar el movimiento de la ruta en la base de datos local.</string>
     <string name="warning">Atención</string>
+    <string name="title_alert_no_intenet">Sin internet</string>
+    <string name="msg_alert_no_internet">Asegúrese de tener una conexión a Internet activa.</string>
+    <string name="btn_label_refresh">Actualizar</string>
+    <string name="txt_error_acceso_ubiacacion">Lo sentimos, no es posible acceder a tu ubicación actual.</string>
+    <string name="txt_msg_error_insert_database_inicio_ruta">Lo sentimos, ocurrió un problea al registrar el inicio de ruta en la base de datos local.</string>
+    <string name="txt_msg_error_insert_database_fin_ruta">Lo sentimos, ocurrió un problea al registrar el fin de ruta en la base de datos local.</string>
+    <string name="txt_title_update_local_bbdd">Actualizando base de datos local</string>
+    <string name="text_content_small_update_local_bbdd">Actualizando datos para uso offline</string>
+    <string name="text_content_update_local_bbdd">PULI Transporters está actualizando la base de datos local para uso offline.</string>
+    <string name="content_small_finshed_update_local_bbdd">Actualización de base de datos local finalizada.</string>
+    <string name="content_finshed_update_local_bbdd">PULI Transportadores finalizó la actualizaciónd de la base de datos local para uso en offline.</string>
+    <string name="txt_title_update_server">Actualizando servidor</string>
+    <string name="text_content_small_update_server">Actualizando datos en servidor.</string>
+    <string name="text_content_update_server">PULI Transportadores está actualizando datos locales en el servidor princpal.</string>
+    <string name="content_finshed_update_server">Se actualizaron {number} registros en el servidor</string>
+    <string name="content_small_finshed_update_server">Actualización de datos en el servidor finalizada.}</string>
+    <string name="txt_msg_error_insert_database_check">Lo sentimos, ocurrió un problema al registrar el Check en la base de datos local.</string>
 
 </resources>

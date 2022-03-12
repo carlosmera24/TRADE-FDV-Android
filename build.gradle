@@ -18,6 +18,10 @@ buildscript {
     }
 }
 
+ext {
+    var = '/usr/projects/AndroidStudio/Trade-FDV/cert_trade_fdv.jks'
+}
+
 allprojects {
     repositories {
         jcenter()

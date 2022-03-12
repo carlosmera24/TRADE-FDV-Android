@@ -172,6 +172,11 @@ public class InspeccionAdapter extends BaseAdapter
         return array;
     }
 
+    public ArrayList<TipoInspeccion> getLista_inspeccion()
+    {
+        return lista_inspeccion;
+    }
+
     class ViewHolder
     {
         TextView tvDescripcion;

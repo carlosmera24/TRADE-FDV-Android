@@ -14,6 +14,7 @@ public class Usuario
     private String nombre_usuario;
     private String token;
     private String imagen;
+    public String empresa;
 
     public Usuario(){}
 
@@ -25,7 +26,8 @@ public class Usuario
                    String id_ruta,
                    String nombre_usuario,
                    String token,
-                   String imagen)
+                   String imagen,
+                   String empresa)
     {
         this.id = id;
         this.usuario = usuario;
@@ -36,6 +38,7 @@ public class Usuario
         this.nombre_usuario = nombre_usuario;
         this.token = token;
         this.imagen = imagen;
+        this.empresa = empresa;
     }
 
     public int getId() {
@@ -110,6 +113,18 @@ public class Usuario
         this.imagen = imagen;
     }
 
+    public void setId_fdv(String id_fdv) {
+        this.id_fdv = id_fdv;
+    }
+
+    public String getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(String empresa) {
+        this.empresa = empresa;
+    }
+
     @Override
     public String toString() {
         return "Usuario{" +
@@ -117,11 +132,12 @@ public class Usuario
                 ", usuario='" + usuario + '\'' +
                 ", id_perfil=" + id_perfil +
                 ", id_conductor='" + id_conductor + '\'' +
-                ", id_vehiculo='" + id_fdv + '\'' +
+                ", id_fdv='" + id_fdv + '\'' +
                 ", id_ruta='" + id_ruta + '\'' +
                 ", nombre_usuario='" + nombre_usuario + '\'' +
                 ", token='" + token + '\'' +
                 ", imagen='" + imagen + '\'' +
+                ", empresa='" + empresa + '\'' +
                 '}';
     }
 }

@@ -180,4 +180,6 @@ public class RutaAlumno
                 ", orden=" + orden +
                 '}';
     }
+
+    public String getNombreCompleto(){ return getNombre() +" "+ getApellido(); }
 }

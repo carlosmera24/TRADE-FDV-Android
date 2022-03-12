@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import co.com.puli.trade.fdv.clases.PDV;
 import co.com.puli.trade.fdv.clases.RutaGrama;
 import co.com.puli.trade.fdv.database.DatabaseContract.*;
-import co.com.puli.trade.fdv.database.models.Colegio;
 import co.com.puli.trade.fdv.database.models.Inspeccion;
 import co.com.puli.trade.fdv.database.models.MvtoCheck;
 import co.com.puli.trade.fdv.database.models.MvtoFinRuta;
@@ -37,8 +37,8 @@ import java.util.List;
  */
 public class DatabaseHelper extends SQLiteOpenHelper
 {
-    private static final int DATABASE_VERSION = 3;
-    private static final String DATABASE_NAME = "PuliTransportadores.db";
+    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "TradeFDV.db";
 
     /*-----Registros para crear tablas------*/
     //Crear tabla usuario
@@ -53,7 +53,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             UserEntry.COLUMN_NOMBRE_USUARIO +" TEXT," +
             UserEntry.COLUMN_TOKEN +" TEXT," +
             UserEntry.COLUMN_IMAGEN +" TEXT," +
-            UserEntry.COLUMN_STATUS_RUTA +" INTEGER)";
+            UserEntry.COLUMN_STATUS_RUTA +" INTEGER," +
+            UserEntry.COLUMN_EMPRESA +" TEXT)";
 
     //Crear tabla parametro General
     private static final String CREATE_TABLE_PARAMETRO_GENERAL = "CREATE TABLE "+ ParametroGeneralEntry.TABLE_NAME +
@@ -80,20 +81,11 @@ public class DatabaseHelper extends SQLiteOpenHelper
             TerminosCondicionesEntry.COLUMN_MENSAJE +" TEXT," +
             TerminosCondicionesEntry.COLUMN_CODIGO_USUARIO +" TEXT)";
 
-    //Creat tabla colegio
-    private static final String CREATE_TABLE_COLEGIO = "CREATE TABLE "+ ColegioEntry.TABLE_NAME +
-            "("+ ColegioEntry._ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
-            ColegioEntry.COLUMN_ID +" INTEGER," +
-            ColegioEntry.COLUMN_NOMBRE +" TEXT," +
-            ColegioEntry.COLUMN_LAT +" NUMERIC," +
-            ColegioEntry.COLUMN_LNG +" NUMERIC)";
-
     //Ceate table inspeccion
     private static final String CREATE_TABLE_INSPECCION = "CREATE TABLE "+ InspeccionEntry.TABLE_NAME +
             "("+ InspeccionEntry._ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
             InspeccionEntry.COLUMN_ID_TIPO_INSPECCION +" INTEGER," +
-            InspeccionEntry.COLUMN_ID_VEHICULO +" TEXT," +
-            InspeccionEntry.COLUMN_ID_CONDUCTOR +" TEXT," +
+            InspeccionEntry.COLUMN_ID_FDV +" TEXT," +
             InspeccionEntry.COLUMN_FECHA +" TEXT," +
             InspeccionEntry.COLUMN_FECHA_DATE +" TEXT," +
             InspeccionEntry.COLUMN_RESULTADO +" TEXT)";
@@ -128,21 +120,22 @@ public class DatabaseHelper extends SQLiteOpenHelper
             MvtoFinRutaEntry.COLUMN_LNG +" NUMERIC)";
 
     //Create table rutas alumnos
-    private static final String CREATE_TABLE_RUTAS_ALUMNOS = "CREATE TABLE "+ RutasAlumnosEntry.TABLE_NAME +
-            "("+ RutasAlumnosEntry._ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
-            RutasAlumnosEntry.COLUMN_ID_ALUMNO +" TEXT," +
-            RutasAlumnosEntry.COLUMN_ID_RUTA +" TEXT," +
-            RutasAlumnosEntry.COLUMN_ID_RUTA_VEHICULO +" TEXT," +
-            RutasAlumnosEntry.COLUMN_ID_VEHICULO +" TEXT," +
-            RutasAlumnosEntry.COLUMN_ID_CONDUCTOR +" TEXT," +
-            RutasAlumnosEntry.COLUMN_DESCRIPCION_RUTA +" TEXT," +
-            RutasAlumnosEntry.COLUMN_ID_MONITOR +" TEXT," +
-            RutasAlumnosEntry.COLUMN_NOMBRE +" TEXT," +
-            RutasAlumnosEntry.COLUMN_APELLIDO +" TEXT," +
-            RutasAlumnosEntry.COLUMN_ESTADO_IN +" INTEGER," +
-            RutasAlumnosEntry.COLUMN_ESTADO_OUT +" INTEGER," +
-            RutasAlumnosEntry.COLUMN_ESTADO_AUSENTE +" INTEGER," +
-            RutasAlumnosEntry.COLUMN_ORDEN +" INTEGER)";
+    private static final String CREATE_TABLE_RUTAS_ALUMNOS = "CREATE TABLE "+ RutasPDVEntry.TABLE_NAME +
+            "("+ RutasPDVEntry._ID +" INTEGER PRIMARY KEY AUTOINCREMENT," +
+            RutasPDVEntry.COLUMN_ID_PDV +" TEXT," +
+            RutasPDVEntry.COLUMN_NOMBRE +" TEXT," +
+            RutasPDVEntry.COLUMN_NOMBRE_CONTACTO +" TEXT," +
+            RutasPDVEntry.COLUMN_APELLIDO_CONTACTO +" TEXT," +
+            RutasPDVEntry.COLUMN_DIRECCION +" TEXT," +
+            RutasPDVEntry.COLUMN_TELEFONO +" TEXT," +
+            RutasPDVEntry.COLUMN_CELULAR +" TEXT," +
+            RutasPDVEntry.COLUMN_EMAIL +" TEXT," +
+            RutasPDVEntry.COLUMN_LAT +" TEXT," +
+            RutasPDVEntry.COLUMN_LNG +" TEXT," +
+            RutasPDVEntry.COLUMN_ZONA +" TEXT," +
+            RutasPDVEntry.COLUMN_ESTADO_IN +" INTEGER," +
+            RutasPDVEntry.COLUMN_ESTADO_OUT +" INTEGER," +
+            RutasPDVEntry.COLUMN_ESTADO_AUSENTE +" INTEGER)";
 
     //Create table MvtoCheck
     private static final String CREATE_TABLE_MVTO_CHECKIN = "CREATE TABLE "+ MvtoCheckEntry.TABLE_NAME +
@@ -150,9 +143,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             MvtoCheckEntry.COLUMN_LAT +" NUMERIC," +
             MvtoCheckEntry.COLUMN_LNG +" NUMERIC," +
             MvtoCheckEntry.COLUMN_FECHA +" TEXT," +
-            MvtoCheckEntry.COLUMN_ID_VEHICULO +" TEXT," +
-            MvtoCheckEntry.COLUMN_ID_VEHICULO_RUTA +" TEXT," +
-            MvtoCheckEntry.COLUMN_ID_ALUMNO +" TEXT," +
+            MvtoCheckEntry.COLUMN_ID_FDV +" TEXT," +
+            MvtoCheckEntry.COLUMN_ID_PDV +" TEXT," +
             MvtoCheckEntry.COLUMN_TIPO_CHECKIN +" INTEGER)";
 
     //Create table MvtoRastro
@@ -182,7 +174,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
         db.execSQL( CREATE_TABLE_PARAMETRO_GENERAL );
         db.execSQL( CREATE_TABLE_RUTA_GRAMA );
         db.execSQL( CREATE_TABLE_TERMINOS_CONDICIONES );
-        db.execSQL( CREATE_TABLE_COLEGIO );
         db.execSQL( CREATE_TABLE_INSPECCION );
         db.execSQL( CREATE_TABLE_MVTO_KILOMETROS );
         db.execSQL( CREATE_TABLE_TIPO_INSPECCION );
@@ -202,13 +193,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS "+ ParametroGeneralEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ RutaGramaEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ TerminosCondicionesEntry.TABLE_NAME );
-        db.execSQL("DROP TABLE IF EXISTS "+ ColegioEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ InspeccionEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ MvtoKilometrosEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ TipoInspeccionEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ MvtoInicioRutaEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ MvtoFinRutaEntry.TABLE_NAME );
-        db.execSQL("DROP TABLE IF EXISTS "+ RutasAlumnosEntry.TABLE_NAME );
+        db.execSQL("DROP TABLE IF EXISTS "+ RutasPDVEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ MvtoCheckEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ MvtoRastreoEntry.TABLE_NAME );
         db.execSQL("DROP TABLE IF EXISTS "+ RutasUsuarioEntry.TABLE_NAME );
@@ -250,7 +240,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     cursor.getString(cursor.getColumnIndex(UserEntry.COLUMN_ID_RUTA)),
                     cursor.getString(cursor.getColumnIndex(UserEntry.COLUMN_NOMBRE_USUARIO)),
                     cursor.getString(cursor.getColumnIndex(UserEntry.COLUMN_TOKEN)),
-                    cursor.getString(cursor.getColumnIndex(UserEntry.COLUMN_IMAGEN))
+                    cursor.getString(cursor.getColumnIndex(UserEntry.COLUMN_IMAGEN)),
+                    cursor.getString(cursor.getColumnIndex(UserEntry.COLUMN_EMPRESA))
             );
             cursor.close();
             database.close();
@@ -282,6 +273,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         values.put(UserEntry.COLUMN_NOMBRE_USUARIO, usuario.getNombre_usuario());
         values.put(UserEntry.COLUMN_TOKEN, usuario.getToken());
         values.put(UserEntry.COLUMN_IMAGEN, usuario.getImagen());
+        values.put(UserEntry.COLUMN_EMPRESA, usuario.getEmpresa());
 
         long id = database.insert( UserEntry.TABLE_NAME, null, values );
 
@@ -538,63 +530,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
     }
 
     /**
-     * Registra los datos del usuario
-     * @param colegio {@link Colegio}
-     * @return long  ID de la fila recién creada o -1 si hubo un error al insertar los datos
-     */
-    public long setColegio(Colegio colegio)
-    {
-        SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(ColegioEntry.COLUMN_ID, colegio.getId());
-        values.put(ColegioEntry.COLUMN_NOMBRE, colegio.getNombre());
-        values.put(ColegioEntry.COLUMN_LAT, colegio.getLat());
-        values.put(ColegioEntry.COLUMN_LNG, colegio.getLng());
-
-        long id = database.insert( ColegioEntry.TABLE_NAME, null, values );
-
-        database.close();
-
-        return id;
-    }
-
-    /**
-     * Retorna los datos del colegio
-     * @return colegio {@link Colegio}
-     */
-    public Colegio getColegio()
-    {
-        SQLiteDatabase database = this.getReadableDatabase();
-
-        Cursor cursor = database.query(
-                ColegioEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-
-        if( cursor.moveToFirst() )
-        {
-            Colegio colegio = new Colegio(
-                    cursor.getInt(cursor.getColumnIndex(ColegioEntry.COLUMN_ID)),
-                    cursor.getString(cursor.getColumnIndex(ColegioEntry.COLUMN_NOMBRE)),
-                    cursor.getDouble(cursor.getColumnIndex(ColegioEntry.COLUMN_LAT)),
-                    cursor.getDouble(cursor.getColumnIndex(ColegioEntry.COLUMN_LNG))
-            );
-            cursor.close();
-            database.close();
-
-            return colegio;
-        }
-
-        cursor.close();
-        database.close();
-        return null;
-    }
-
-    /**
      * Registrar datos de la última inspección
      * @param inspeccion Inspeccion
      * @return log ID de la fila creada o -1 si hubo un error al insertar los datos
@@ -604,8 +539,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(InspeccionEntry.COLUMN_ID_TIPO_INSPECCION, inspeccion.getId_tipo_inspeccion());
-        values.put(InspeccionEntry.COLUMN_ID_VEHICULO, inspeccion.getId_vehiculo());
-        values.put(InspeccionEntry.COLUMN_ID_CONDUCTOR, inspeccion.getId_conductor());
+        values.put(InspeccionEntry.COLUMN_ID_FDV, inspeccion.getId_fdv());
         values.put(InspeccionEntry.COLUMN_FECHA, inspeccion.getFecha() );
         values.put(InspeccionEntry.COLUMN_FECHA_DATE, inspeccion.getFecha_date());
         values.put(InspeccionEntry.COLUMN_RESULTADO, inspeccion.getResultado());
@@ -638,8 +572,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             Inspeccion inspeccion = new Inspeccion(
                     cursor.getInt(cursor.getColumnIndex(InspeccionEntry._ID)),
                     cursor.getInt(cursor.getColumnIndex(InspeccionEntry.COLUMN_ID_TIPO_INSPECCION)),
-                    cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_ID_VEHICULO)),
-                    cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_ID_CONDUCTOR)),
+                    cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_ID_FDV)),
                     cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_FECHA)),
                     cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_FECHA_DATE)),
                     cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_RESULTADO))
@@ -811,38 +744,35 @@ public class DatabaseHelper extends SQLiteOpenHelper
      * @param rutaAlumnos
      * @return ids {@link ArrayList<Long>}
      */
-    public List<Long> updateAlumnosRuta(ArrayList<RutaAlumno> rutaAlumnos)
+    public List<Long> updateAlumnosRuta(ArrayList<PDV> rutaAlumnos)
     {
         List<Long> ids = new ArrayList<>();
         SQLiteDatabase database = this.getWritableDatabase();
 
        //Limpiar alumnos
-        database.delete( RutasAlumnosEntry.TABLE_NAME,
-                RutasAlumnosEntry._ID + ">?",
+        database.delete( RutasPDVEntry.TABLE_NAME,
+                RutasPDVEntry._ID + ">?",
                 new String[]{ "0" }
                 );
         //Insertar nuevos alumnos
-        for( RutaAlumno rutaAlumno : rutaAlumnos )
+        for( PDV rutaAlumno : rutaAlumnos )
         {
-           ContentValues contentValues = new ContentValues();
-           if( rutaAlumno.getId() != 0 )
-           {
-               contentValues.put( RutasAlumnosEntry._ID, rutaAlumno.getId() );
-           }
-            contentValues.put( RutasAlumnosEntry.COLUMN_ID_ALUMNO, rutaAlumno.getId_alumno() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_ID_RUTA, rutaAlumno.getId_ruta() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_ID_RUTA_VEHICULO, rutaAlumno.getId_ruta_vehiculo() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_ID_VEHICULO, rutaAlumno.getId_vehiculo() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_ID_CONDUCTOR, rutaAlumno.getId_conductor() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_DESCRIPCION_RUTA, rutaAlumno.getId_conductor() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_ID_MONITOR, rutaAlumno.getId_monitor() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_NOMBRE, rutaAlumno.getNombre() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_APELLIDO, rutaAlumno.getApellido() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_ESTADO_IN, rutaAlumno.getEstado_in() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_ESTADO_OUT, rutaAlumno.getEstado_out() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_ESTADO_AUSENTE, rutaAlumno.getEstado_ausente() );
-            contentValues.put( RutasAlumnosEntry.COLUMN_ORDEN, rutaAlumno.getOrden() );
-            long id = database.insert( RutasAlumnosEntry.TABLE_NAME, null, contentValues );
+            ContentValues contentValues = new ContentValues();
+            contentValues.put( RutasPDVEntry.COLUMN_ID_PDV, rutaAlumno.getId() );
+            contentValues.put( RutasPDVEntry.COLUMN_NOMBRE, rutaAlumno.getNombre() );
+            contentValues.put( RutasPDVEntry.COLUMN_NOMBRE_CONTACTO, rutaAlumno.getNombreCompletoContacto() );
+            contentValues.put( RutasPDVEntry.COLUMN_APELLIDO_CONTACTO, rutaAlumno.getApellidoContacto() );
+            contentValues.put( RutasPDVEntry.COLUMN_DIRECCION, rutaAlumno.getDireccion() );
+            contentValues.put( RutasPDVEntry.COLUMN_TELEFONO, rutaAlumno.getTelefono() );
+            contentValues.put( RutasPDVEntry.COLUMN_CELULAR, rutaAlumno.getCelular() );
+            contentValues.put( RutasPDVEntry.COLUMN_EMAIL, rutaAlumno.getEmail() );
+            contentValues.put( RutasPDVEntry.COLUMN_LAT, rutaAlumno.getLat() );
+            contentValues.put( RutasPDVEntry.COLUMN_LNG, rutaAlumno.getLng() );
+            contentValues.put( RutasPDVEntry.COLUMN_ZONA, rutaAlumno.getZona() );
+            contentValues.put( RutasPDVEntry.COLUMN_ESTADO_IN, rutaAlumno.getCheckIn());
+            contentValues.put( RutasPDVEntry.COLUMN_ESTADO_OUT, rutaAlumno.getCheckOut() );
+            contentValues.put( RutasPDVEntry.COLUMN_ESTADO_AUSENTE, rutaAlumno.getCheckAusente() );
+            long id = database.insert( RutasPDVEntry.TABLE_NAME, null, contentValues );
             if( id > 0 )
             {
                 ids.add( id );
@@ -857,41 +787,42 @@ public class DatabaseHelper extends SQLiteOpenHelper
      * Retorna el listado de RutaAlumnos
      * @return ArrayList<RutaAlumno></>
      */
-    public ArrayList<co.com.puli.trade.fdv.clases.RutaAlumno> getListAlumnosRuta()
+    public ArrayList<co.com.puli.trade.fdv.clases.PDV> getListPDVsRuta(String id_fdv)
     {
-        ArrayList<co.com.puli.trade.fdv.clases.RutaAlumno> alumnos = new ArrayList<>();
+        ArrayList<co.com.puli.trade.fdv.clases.PDV> alumnos = new ArrayList<>();
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.query(
-                RutasAlumnosEntry.TABLE_NAME,
+                RutasPDVEntry.TABLE_NAME,
                 null,
                 null,
                 null,
                 null,
                 null,
-                RutasAlumnosEntry.COLUMN_ORDEN +" ASC"
+                null
         );
         while( cursor.moveToNext() )
         {
-            co.com.puli.trade.fdv.clases.RutaAlumno rutaAlumno = new co.com.puli.trade.fdv.clases.RutaAlumno(
-                    cursor.getString( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_NOMBRE ) ),
-                    cursor.getString( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_APELLIDO ) ),
-                    cursor.getString( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ID_ALUMNO ) ),
-                    cursor.getString( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ID_RUTA ) ),
-                    cursor.getString( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_DESCRIPCION_RUTA ) ),
-                    cursor.getString( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ID_RUTA_VEHICULO ) ),
-                    cursor.getString( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ID_VEHICULO ) ),
-                    cursor.getString( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ID_CONDUCTOR ) ),
-                    cursor.getString( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ID_MONITOR ) ),
-                    cursor.getInt( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ESTADO_IN ) ),
-                    cursor.getInt( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ESTADO_OUT ) ),
-                    cursor.getInt( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ESTADO_AUSENTE ) ),
-                    cursor.getInt( cursor.getColumnIndex( RutasAlumnosEntry.COLUMN_ORDEN ) )
+            co.com.puli.trade.fdv.clases.PDV rutaAlumno = new co.com.puli.trade.fdv.clases.PDV(
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_ID_PDV ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_NOMBRE ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_NOMBRE_CONTACTO ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_APELLIDO_CONTACTO ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_DIRECCION ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_TELEFONO ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_CELULAR ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_EMAIL ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_LAT ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_LNG ) ),
+                    cursor.getString( cursor.getColumnIndex( RutasPDVEntry.COLUMN_ZONA ) ),
+                    cursor.getInt( cursor.getColumnIndex( RutasPDVEntry.COLUMN_ESTADO_IN ) ),
+                    cursor.getInt( cursor.getColumnIndex( RutasPDVEntry.COLUMN_ESTADO_OUT ) ),
+                    cursor.getInt( cursor.getColumnIndex( RutasPDVEntry.COLUMN_ESTADO_AUSENTE ) )
                     );
 
             //Consultar fecha inicio de ruta
             String selection = "SELECT MAX("+ MvtoInicioRutaEntry.COLUMN_FECHA +") FROM "+ MvtoInicioRutaEntry.TABLE_NAME
                     +" WHERE "+ MvtoInicioRutaEntry.COLUMN_ID_RUTA +"= ?";
-            String selectionArgs[] = new String[]{ rutaAlumno.getIdRuta() };
+            String selectionArgs[] = new String[]{ id_fdv };
             String fecha_inicio = "0000-00-00";
             cursor = database.rawQuery(selection, selectionArgs);
             if(cursor.moveToFirst())
@@ -907,8 +838,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             //Consultar CheckIn
             selection = "SELECT COUNT(*) FROM "+ MvtoCheckEntry.TABLE_NAME
                     +" WHERE "+ MvtoCheckEntry.COLUMN_FECHA +">? AND "+ MvtoCheckEntry.COLUMN_TIPO_CHECKIN +"=? " +
-                    "AND "+ MvtoCheckEntry.COLUMN_ID_VEHICULO +"=?  AND "+ MvtoCheckEntry.COLUMN_ID_ALUMNO +"=?";
-            selectionArgs = new String[]{ fecha_inicio, "0", rutaAlumno.getIdVehiculo(), rutaAlumno.getId() };
+                    "AND "+ MvtoCheckEntry.COLUMN_ID_FDV +"=?  AND "+ MvtoCheckEntry.COLUMN_ID_PDV +"=?";
+            selectionArgs = new String[]{ fecha_inicio, "0", id_fdv, rutaAlumno.getId() };
             cursor = database.rawQuery(selection, selectionArgs);
             if(cursor.moveToFirst())
             {
@@ -918,8 +849,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             //Consultar CheckOut
             selection = "SELECT COUNT(*) FROM "+ MvtoCheckEntry.TABLE_NAME
                     +" WHERE "+ MvtoCheckEntry.COLUMN_FECHA +">? AND "+ MvtoCheckEntry.COLUMN_TIPO_CHECKIN +"=? " +
-                    "AND "+ MvtoCheckEntry.COLUMN_ID_VEHICULO +"=?  AND "+ MvtoCheckEntry.COLUMN_ID_ALUMNO +"=?";
-            selectionArgs = new String[]{ fecha_inicio, "1", rutaAlumno.getIdVehiculo(), rutaAlumno.getId() };
+                    "AND "+ MvtoCheckEntry.COLUMN_ID_FDV +"=?  AND "+ MvtoCheckEntry.COLUMN_ID_PDV +"=?";
+            selectionArgs = new String[]{ fecha_inicio, "1", id_fdv, rutaAlumno.getId() };
             cursor = database.rawQuery(selection, selectionArgs);
             if(cursor.moveToFirst())
             {
@@ -929,8 +860,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             //Consultar CheckAus
             selection = "SELECT COUNT(*) FROM "+ MvtoCheckEntry.TABLE_NAME
                     +" WHERE "+ MvtoCheckEntry.COLUMN_FECHA +">? AND "+ MvtoCheckEntry.COLUMN_TIPO_CHECKIN +"=? " +
-                    "AND "+ MvtoCheckEntry.COLUMN_ID_VEHICULO +"=?  AND "+ MvtoCheckEntry.COLUMN_ID_ALUMNO +"=?";
-            selectionArgs = new String[]{ fecha_inicio, "2", rutaAlumno.getIdVehiculo(), rutaAlumno.getId() };
+                    "AND "+ MvtoCheckEntry.COLUMN_ID_FDV +"=?  AND "+ MvtoCheckEntry.COLUMN_ID_PDV +"=?";
+            selectionArgs = new String[]{ fecha_inicio, "2", id_fdv, rutaAlumno.getId() };
             cursor = database.rawQuery(selection, selectionArgs);
             if(cursor.moveToFirst())
             {
@@ -945,55 +876,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
         database.close();
 
         return alumnos;
-    }
-
-    /**
-     * Retorna los datos del alumno RutaAlumno
-     * @param id_ruta String
-     * @param id_alumno String
-     * @return RutaAlumno
-     */
-    public co.com.puli.trade.fdv.clases.RutaAlumno getAlumnoRuta( String id_ruta, String id_alumno)
-    {
-        SQLiteDatabase database = this.getReadableDatabase();
-        String selection = RutasAlumnosEntry.COLUMN_ID_RUTA +"= ? AND "+ RutasAlumnosEntry.COLUMN_ID_ALUMNO +"= ?";
-        String[] selectionArgs = { id_ruta, id_alumno };
-        Cursor cursor = database.query(
-                RutasAlumnosEntry.TABLE_NAME,
-                null,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                UserEntry._ID + " ASC");
-
-        if( cursor.moveToFirst() )
-        {
-            co.com.puli.trade.fdv.clases.RutaAlumno alumno = new co.com.puli.trade.fdv.clases.RutaAlumno(
-                    cursor.getString(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_NOMBRE)),
-                    cursor.getString(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_APELLIDO)),
-                    cursor.getString(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ID_ALUMNO)),
-                    cursor.getString(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ID_RUTA)),
-                    cursor.getString(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_DESCRIPCION_RUTA)),
-                    cursor.getString(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ID_RUTA_VEHICULO)),
-                    cursor.getString(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ID_VEHICULO)),
-                    cursor.getString(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ID_CONDUCTOR)),
-                    cursor.getString(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ID_MONITOR)),
-                    cursor.getInt(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ESTADO_IN)),
-                    cursor.getInt(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ESTADO_OUT)),
-                    cursor.getInt(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ESTADO_AUSENTE)),
-                    cursor.getInt(cursor.getColumnIndex(RutasAlumnosEntry.COLUMN_ORDEN))
-            );
-
-            cursor.close();
-            database.close();
-
-            return alumno;
-        }
-
-        cursor.close();
-        database.close();
-        return null;
     }
 
     /**
@@ -1012,9 +894,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
         values.put(MvtoCheckEntry.COLUMN_LAT, mvtoCheck.getLat());
         values.put(MvtoCheckEntry.COLUMN_LNG, mvtoCheck.getLng());
         values.put(MvtoCheckEntry.COLUMN_FECHA, mvtoCheck.getFecha());
-        values.put(MvtoCheckEntry.COLUMN_ID_VEHICULO, mvtoCheck.getId_vehiculo());
-        values.put(MvtoCheckEntry.COLUMN_ID_VEHICULO_RUTA, mvtoCheck.getId_vehiculo_ruta());
-        values.put(MvtoCheckEntry.COLUMN_ID_ALUMNO, mvtoCheck.getId_alumno());
+        values.put(MvtoCheckEntry.COLUMN_ID_FDV, mvtoCheck.getId_fdv());
+        values.put(MvtoCheckEntry.COLUMN_ID_PDV, mvtoCheck.getId_pdv());
         values.put(MvtoCheckEntry.COLUMN_TIPO_CHECKIN, mvtoCheck.getTipo_checkin());
 
         long id = database.insert( MvtoCheckEntry.TABLE_NAME, null, values );
@@ -1258,17 +1139,15 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     /**
      * Retorna los registros de inspección que requieren enviarse a actualización
-     * @param fecha fecha del Mvto Kilometro a relacionar
      * @return List<Inspeccion>
      */
-    public List<Inspeccion> getInspeccionesForUpdate(String fecha)
+    public List<Inspeccion> getInspeccionesForUpdate()
     {
         List<Inspeccion> inspeccions = new ArrayList<>();
         SQLiteDatabase database = this.getReadableDatabase();
 
-        String selection = InspeccionEntry.COLUMN_ID_TIPO_INSPECCION +"> ? " +
-                "AND "+ InspeccionEntry.COLUMN_FECHA +">= ?";
-        String[] selectionArgs = { "0", fecha };
+        String selection = InspeccionEntry.COLUMN_ID_TIPO_INSPECCION +"> ?";
+        String[] selectionArgs = { "0" };
         Cursor cursor = database.query(
                 InspeccionEntry.TABLE_NAME,
                 null,
@@ -1284,8 +1163,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                     new Inspeccion(
                             cursor.getInt(cursor.getColumnIndex(InspeccionEntry._ID)),
                             cursor.getInt(cursor.getColumnIndex(InspeccionEntry.COLUMN_ID_TIPO_INSPECCION)),
-                            cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_ID_VEHICULO)),
-                            cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_ID_CONDUCTOR)),
+                            cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_ID_FDV)),
                             cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_FECHA)),
                             cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_FECHA_DATE)),
                             cursor.getString(cursor.getColumnIndex(InspeccionEntry.COLUMN_RESULTADO))
@@ -1395,9 +1273,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
                             cursor.getDouble(cursor.getColumnIndex(MvtoCheckEntry.COLUMN_LAT)),
                             cursor.getDouble(cursor.getColumnIndex(MvtoCheckEntry.COLUMN_LNG)),
                             cursor.getString(cursor.getColumnIndex(MvtoCheckEntry.COLUMN_FECHA)),
-                            cursor.getString(cursor.getColumnIndex(MvtoCheckEntry.COLUMN_ID_VEHICULO)),
-                            cursor.getString(cursor.getColumnIndex(MvtoCheckEntry.COLUMN_ID_VEHICULO_RUTA)),
-                            cursor.getString(cursor.getColumnIndex(MvtoCheckEntry.COLUMN_ID_ALUMNO)),
+                            cursor.getString(cursor.getColumnIndex(MvtoCheckEntry.COLUMN_ID_FDV)),
+                            cursor.getString(cursor.getColumnIndex(MvtoCheckEntry.COLUMN_ID_PDV)),
                             cursor.getInt(cursor.getColumnIndex(MvtoCheckEntry.COLUMN_TIPO_CHECKIN))
                     ));
         }
@@ -1608,12 +1485,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
                 new String[]{ "0" }
         );
 
-        //Eliminar Colegio
-        database.delete( ColegioEntry.TABLE_NAME,
-                ColegioEntry._ID + ">?",
-                new String[]{ "0" }
-        );
-
         //Eliminar tipos inspeccion
         database.delete( TipoInspeccionEntry.TABLE_NAME,
                 TipoInspeccionEntry._ID + ">?",
@@ -1621,8 +1492,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
         );
 
         //Eliminar tipos inspeccion
-        database.delete( RutasAlumnosEntry.TABLE_NAME,
-                RutasAlumnosEntry._ID + ">?",
+        database.delete( RutasPDVEntry.TABLE_NAME,
+                RutasPDVEntry._ID + ">?",
                 new String[]{ "0" }
         );
 

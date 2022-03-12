@@ -22,6 +22,7 @@ public final class DatabaseContract
         public static final String COLUMN_TOKEN = "token";
         public static final String COLUMN_IMAGEN = "imagen";
         public static final String COLUMN_STATUS_RUTA = "status_ruta";
+        public static final String COLUMN_EMPRESA = "empresa";
     }
 
     public static class ParametroGeneralEntry implements BaseColumns
@@ -52,21 +53,11 @@ public final class DatabaseContract
         public static final String COLUMN_CODIGO_USUARIO = "cogido_usuario";
     }
 
-    public static class ColegioEntry implements BaseColumns
-    {
-        public static final String TABLE_NAME = "colegio";
-        public static final String COLUMN_ID = "id_colegio";
-        public static final String COLUMN_NOMBRE = "nombre";
-        public static final String COLUMN_LAT = "lat";
-        public static final String COLUMN_LNG = "lng";
-    }
-
     public static class InspeccionEntry implements BaseColumns
     {
         public static final String TABLE_NAME = "inspeccion";
         public static final String COLUMN_ID_TIPO_INSPECCION = "id_tipo_inspeccion";
-        public static final String COLUMN_ID_VEHICULO = "id_vehiculo";
-        public static final String COLUMN_ID_CONDUCTOR = "id_conductor";
+        public static final String COLUMN_ID_FDV = "id_fdv";
         public static final String COLUMN_FECHA = "fecha_datetime";
         public static final String COLUMN_FECHA_DATE = "fecha_date";
         public static final String COLUMN_RESULTADO = "resultado";
@@ -105,22 +96,23 @@ public final class DatabaseContract
         public static final String COLUMN_LNG = "lng";
     }
 
-    public static class RutasAlumnosEntry implements BaseColumns
+    public static class RutasPDVEntry implements BaseColumns
     {
-        public static final String TABLE_NAME = "rutas_alumnos";
-        public static final String COLUMN_ID_ALUMNO = "id_alumno";
-        public static final String COLUMN_ID_RUTA = "id_ruta";
-        public static final String COLUMN_ID_RUTA_VEHICULO = "id_ruta_vehiculo";
-        public static final String COLUMN_ID_VEHICULO = "id_vehiculo";
-        public static final String COLUMN_ID_CONDUCTOR = "id_conductor";
-        public static final String COLUMN_DESCRIPCION_RUTA = "desc_ruta";
-        public static final String COLUMN_ID_MONITOR = "id_monitor";
-        public static final String COLUMN_NOMBRE = "id_nombre";
-        public static final String COLUMN_APELLIDO = "id_apellido";
+        public static final String TABLE_NAME = "rutas_pdvs";
+        public static final String COLUMN_ID_PDV = "id_pdv";
+        public static final String COLUMN_NOMBRE = "nombre";
+        public static final String COLUMN_NOMBRE_CONTACTO = "nombre_contacto";
+        public static final String COLUMN_APELLIDO_CONTACTO = "apellido_contacto";
+        public static final String COLUMN_DIRECCION = "direccion";
+        public static final String COLUMN_TELEFONO = "telefono";
+        public static final String COLUMN_CELULAR = "celular";
+        public static final String COLUMN_EMAIL = "email";
+        public static final String COLUMN_LAT = "lat";
+        public static final String COLUMN_LNG = "lng";
+        public static final String COLUMN_ZONA = "zona";
         public static final String COLUMN_ESTADO_IN = "estado_in";
         public static final String COLUMN_ESTADO_OUT = "estado_out";
         public static final String COLUMN_ESTADO_AUSENTE = "estado_ausente";
-        public static final String COLUMN_ORDEN = "orden";
     }
 
     public static class MvtoCheckEntry implements BaseColumns
@@ -129,9 +121,8 @@ public final class DatabaseContract
         public static final String COLUMN_LAT = "lat";
         public static final String COLUMN_LNG = "lng";
         public static final String COLUMN_FECHA = "fecha";
-        public static final String COLUMN_ID_VEHICULO = "id_vehiculo";
-        public static final String COLUMN_ID_VEHICULO_RUTA = "id_vehiculo_ruta";
-        public static final String COLUMN_ID_ALUMNO = "id_alumno";
+        public static final String COLUMN_ID_PDV = "id_pdv";
+        public static final String COLUMN_ID_FDV = "id_fdv";
         public static final String COLUMN_TIPO_CHECKIN = "tipo_checkin";
     }
 

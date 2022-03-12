@@ -36,6 +36,8 @@ import co.com.puli.trade.fdv.clases.Producto;
 import co.com.puli.trade.fdv.clases.TipoAlerta;
 import co.com.puli.trade.fdv.clases.Utilidades;
 import co.com.puli.trade.fdv.actividades.PrincipalActivity;
+import co.com.puli.trade.fdv.database.DatabaseHelper;
+import co.com.puli.trade.fdv.database.models.MvtoCheck;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -248,15 +250,85 @@ public class PDVRutaAdapter extends BaseAdapter
         Location location = instancia.getLocationGPS();
         if( location != null )
         {
-            postParam = new HashMap<>();
-            postParam.put("id_pdv", pdv.getId() );
-            postParam.put("id_fdv", id_fdv );
-            postParam.put("tipo_checkin", tipo_check);
-            postParam.put("lat", "" + location.getLatitude());
-            postParam.put("lng", "" + location.getLongitude());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            RegistrarCheckTask rct = new RegistrarCheckTask(view, position);
-            rct.execute(URL_CHECK);
+            //Verificar disponibilidad de Red
+            if( new Utilidades().redDisponible((ConnectivityManager) actividad.getSystemService(Context.CONNECTIVITY_SERVICE)) ) {
+                postParam = new HashMap<>();
+                postParam.put("id_pdv", pdv.getId() );
+                postParam.put("id_fdv", id_fdv );
+                postParam.put("tipo_checkin", tipo_check);
+                postParam.put("lat", "" + location.getLatitude());
+                postParam.put("lng", "" + location.getLongitude());
+
+                RegistrarCheckTask rct = new RegistrarCheckTask(view, position);
+                rct.execute(URL_CHECK);
+            }else
+            {
+                long id = new DatabaseHelper(actividad.getApplicationContext())
+                        .setMvtoCheckIn( new MvtoCheck(
+                                location.getLatitude(),
+                                location.getLongitude(),
+                                sdf.format(Calendar.getInstance().getTime()),
+                                id_fdv,
+                                pdv.getId(),
+                                Integer.parseInt( tipo_check )
+                        ));
+
+                if( id > 0 )
+                {
+                    procesarRegistroCheck(position, tipo_check, view);
+                }else{
+                    new Utilidades().mostrarSimpleMensaje(actividad, actividad.getString(R.string.txt_title_error_database),
+                            actividad.getString( R.string.txt_msg_error_insert_database_check ),
+                            true  );
+                }
+            }
+        }
+    }
+
+    public void procesarRegistroCheck( int position, String tipo_check, View vista)
+    {
+        String msg = "";
+        View btnIn = vista.findViewById(R.id.btCheckIn);
+        View btnOut = vista.findViewById(R.id.btCheckOut);
+        View btnAus = vista.findViewById(R.id.btNoRuta);
+        switch (  tipo_check )
+        {
+            case "0":
+                msg = actividad.getString(R.string.txt_msg_checkin) ;
+                btnIn.setEnabled(false);
+                btnIn.setBackgroundResource(R.color.gris);
+                btnAus.setEnabled(false);
+                btnAus.setBackgroundResource(R.color.gris);
+                btnOut.setEnabled(true);
+                btnAus.setBackgroundResource(R.color.btn_out);
+                actualizarDataAdapter( position, Integer.parseInt(tipo_check) );
+                //Guardar el ID del PDV para habilitar su uso en pedidos
+                agregarPDVCheckIn( (PDV) getItem( position)  );
+                //Cargar listado de productos para control
+                procesarCapturaControlPDV( (PDV) getItem( position) );
+                break;
+            case "1":
+                msg = actividad.getString(R.string.txt_msg_checkout) ;
+                btnOut.setEnabled(false);
+                btnOut.setBackgroundResource(R.color.gris);
+                btnAus.setEnabled(false);
+                btnAus.setBackgroundResource(R.color.gris);
+                actualizarDataAdapter( position, Integer.parseInt(tipo_check) );
+                new Utilidades().mostrarSimpleMensaje(instancia, actividad.getString( R.string.txt_titulo_dialog_check ), msg, true);
+                break;
+            case "2":
+                msg = actividad.getString(R.string.txt_msg_checkausente) ;
+                btnIn.setEnabled(false);
+                btnIn.setBackgroundResource(R.color.gris);
+                btnOut.setEnabled(false);
+                btnOut.setBackgroundResource(R.color.gris);
+                btnAus.setEnabled(false);
+                btnAus.setBackgroundResource(R.color.gris);
+                actualizarDataAdapter( position, Integer.parseInt(tipo_check) );
+                new Utilidades().mostrarSimpleMensaje(instancia, actividad.getString( R.string.txt_titulo_dialog_check ), msg, true);
+                break;
         }
     }
 
@@ -563,23 +635,7 @@ public class PDVRutaAdapter extends BaseAdapter
      * */
     public String getNombreEmpresa()
     {
-        try {
-            GlobalParametrosGenerales parametros = (GlobalParametrosGenerales) actividad.getApplicationContext();
-            JSONObject empresa = parametros.getEmpresa();
-            if (empresa != null) {
-                return empresa.getString("nombre");
-            }else{
-                return null;
-            }
-        }catch( JSONException e )
-        {
-            Log.e("JSONException","PDVRutaAdapter.getNombreEmpresa.JSONException:"+ e.toString() );
-            return null;
-        }catch(Exception e )
-        {
-            Log.e("Exception","PDVRutaAdapter.getNombreEmpresa.Exception:"+ e.toString() );
-            return null;
-        }
+        return new DatabaseHelper( instancia ).getUsuario().getEmpresa();
     }
 
     /**
@@ -606,15 +662,13 @@ public class PDVRutaAdapter extends BaseAdapter
     public class RegistrarCheckTask extends AsyncTask<String, Void, JSONObject>
     {
         ProgressDialog progreso;
-        View btnIn, btnOut, btnAus;
         int position;
+        View vista;
+
 
         RegistrarCheckTask( View vista, int position )
         {
-
-            btnIn = vista.findViewById(R.id.btCheckIn);
-            btnOut = vista.findViewById(R.id.btCheckOut);
-            btnAus = vista.findViewById(R.id.btNoRuta);
+            this.vista = vista;
             this.position = position;
         }
 
@@ -641,45 +695,7 @@ public class PDVRutaAdapter extends BaseAdapter
                     String estado = result.getString("estado"); //Estado WebServices
                     if( estado.equals("OK") )
                     {
-                        String msg = "";
-                        switch (  result.getString("tipo_check") )
-                        {
-                            case "0":
-                                msg = actividad.getString(R.string.txt_msg_checkin) ;
-                                btnIn.setEnabled(false);
-                                btnIn.setBackgroundResource(R.color.gris);
-                                btnAus.setEnabled(false);
-                                btnAus.setBackgroundResource(R.color.gris);
-                                btnOut.setEnabled(true);
-                                btnAus.setBackgroundResource(R.color.btn_out);
-                                actualizarDataAdapter( position, result.getInt("tipo_check"));
-                                //Guardar el ID del PDV para habilitar su uso en pedidos
-                                agregarPDVCheckIn( (PDV) getItem( position)  );
-                                //Cargar listado de productos para control
-                                procesarCapturaControlPDV( (PDV) getItem( position) );
-                                break;
-                            case "1":
-                                msg = actividad.getString(R.string.txt_msg_checkout) ;
-                                btnOut.setEnabled(false);
-                                btnOut.setBackgroundResource(R.color.gris);
-                                btnAus.setEnabled(false);
-                                btnAus.setBackgroundResource(R.color.gris);
-                                actualizarDataAdapter( position, result.getInt("tipo_check"));
-                                new Utilidades().mostrarSimpleMensaje(instancia, actividad.getString( R.string.txt_titulo_dialog_check ), msg, true);
-                                break;
-                            case "2":
-                                msg = actividad.getString(R.string.txt_msg_checkausente) ;
-                                btnIn.setEnabled(false);
-                                btnIn.setBackgroundResource(R.color.gris);
-                                btnOut.setEnabled(false);
-                                btnOut.setBackgroundResource(R.color.gris);
-                                btnAus.setEnabled(false);
-                                btnAus.setBackgroundResource(R.color.gris);
-                                actualizarDataAdapter( position, result.getInt("tipo_check"));
-                                new Utilidades().mostrarSimpleMensaje(instancia, actividad.getString( R.string.txt_titulo_dialog_check ), msg, true);
-                                break;
-
-                        }
+                        procesarRegistroCheck(position, result.getString("tipo_check"), vista);
                     }else{
                         new Utilidades().mostrarSimpleMensaje(instancia, "Conexión", actividad.getString(R.string.txt_msg_error_consulta), true);
                         Log.e("IRTask-Error", "Estado:"+estado+",msg:"+result.getString("msg")+",cod:"+result.getString("code"));

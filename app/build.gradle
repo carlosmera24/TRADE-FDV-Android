@@ -5,7 +5,7 @@ android {
         vnc_intuitiva {
             keyAlias 'keyVncIntuitiva'
             keyPassword 'iNTui7Iv4'
-            storeFile file('/home/Datos/Proyectos/AndroidStudio/Trade-FDV/cert_trade_fdv.jks')
+            storeFile file(var)
             storePassword 'iNTui7Iv4'
         }
     }
@@ -59,6 +59,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.google.firebase:firebase-messaging:21.1.0'
     //Maply

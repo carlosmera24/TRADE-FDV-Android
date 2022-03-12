@@ -9,30 +9,29 @@ public class MvtoCheck
     private Double lat;
     private Double lng;
     private String fecha;
-    private String id_vehiculo;
-    private String id_vehiculo_ruta;
-    private String id_alumno;
+    private String id_fdv;
+    private String id_pdv;
     private int tipo_checkin;
 
-    public MvtoCheck(Double lat, Double lng, String fecha, String id_vehiculo, String id_vehiculo_ruta, String id_alumno, int tipo_checkin) {
+    public MvtoCheck(Double lat, Double lng, String fecha, String id_fdv, String id_pdv,
+                     int tipo_checkin) {
         id = 0;
         this.lat = lat;
         this.lng = lng;
         this.fecha = fecha;
-        this.id_vehiculo = id_vehiculo;
-        this.id_vehiculo_ruta = id_vehiculo_ruta;
-        this.id_alumno = id_alumno;
+        this.id_fdv = id_fdv;
+        this.id_pdv = id_pdv;
         this.tipo_checkin = tipo_checkin;
     }
 
-    public MvtoCheck(int id, Double lat, Double lng, String fecha, String id_vehiculo, String id_vehiculo_ruta, String id_alumno, int tipo_checkin) {
+    public MvtoCheck(int id, Double lat, Double lng, String fecha, String id_fdv, String id_pdv,
+                     int tipo_checkin) {
         this.id = id;
         this.lat = lat;
         this.lng = lng;
         this.fecha = fecha;
-        this.id_vehiculo = id_vehiculo;
-        this.id_vehiculo_ruta = id_vehiculo_ruta;
-        this.id_alumno = id_alumno;
+        this.id_fdv = id_fdv;
+        this.id_pdv = id_pdv;
         this.tipo_checkin = tipo_checkin;
     }
 
@@ -68,28 +67,20 @@ public class MvtoCheck
         this.fecha = fecha;
     }
 
-    public String getId_vehiculo() {
-        return id_vehiculo;
+    public String getId_fdv() {
+        return id_fdv;
     }
 
-    public void setId_vehiculo(String id_vehiculo) {
-        this.id_vehiculo = id_vehiculo;
+    public void setId_fdv(String id_fdv) {
+        this.id_fdv = id_fdv;
     }
 
-    public String getId_vehiculo_ruta() {
-        return id_vehiculo_ruta;
+    public String getId_pdv() {
+        return id_pdv;
     }
 
-    public void setId_vehiculo_ruta(String id_vehiculo_ruta) {
-        this.id_vehiculo_ruta = id_vehiculo_ruta;
-    }
-
-    public String getId_alumno() {
-        return id_alumno;
-    }
-
-    public void setId_alumno(String id_alumno) {
-        this.id_alumno = id_alumno;
+    public void setId_pdv(String id_pdv) {
+        this.id_pdv = id_pdv;
     }
 
     public int getTipo_checkin() {

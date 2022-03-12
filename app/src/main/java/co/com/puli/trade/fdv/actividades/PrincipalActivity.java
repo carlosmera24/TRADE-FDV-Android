@@ -3,6 +3,7 @@ package co.com.puli.trade.fdv.actividades;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,6 +37,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.multidex.MultiDex;
 
 import android.provider.Settings;
 import android.telephony.PhoneNumberUtils;
@@ -70,6 +73,7 @@ import co.com.puli.trade.fdv.clases.ImageBitMap;
 import co.com.puli.trade.fdv.clases.LocationMonitoringService;
 import co.com.puli.trade.fdv.clases.NetworkBroadcastReceiver;
 import co.com.puli.trade.fdv.clases.PDV;
+import co.com.puli.trade.fdv.clases.RutaAlumno;
 import co.com.puli.trade.fdv.clases.TipoAlerta;
 import co.com.puli.trade.fdv.clases.TipoInspeccion;
 import co.com.puli.trade.fdv.clases.Utilidades;
@@ -87,6 +91,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import co.com.puli.trade.fdv.database.DatabaseHelper;
+import co.com.puli.trade.fdv.database.models.Inspeccion;
+import co.com.puli.trade.fdv.database.models.MvtoFinRuta;
+import co.com.puli.trade.fdv.database.models.MvtoInicioRuta;
+import co.com.puli.trade.fdv.database.models.MvtoKilometros;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PrincipalActivity extends AppCompatActivity implements ServiceConnection
@@ -129,81 +138,101 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
+        try
+        {
+            //Bind al servicio gps (GPSServices)
+            Intent intent = new Intent(this, GPSServices.class);
+            getApplicationContext().bindService(intent,this, Context.BIND_AUTO_CREATE );
 
-        //Bind al servicio gps (GPSServices)
-        Intent intent = new Intent(this, GPSServices.class);
-        getApplicationContext().bindService(intent,this, Context.BIND_AUTO_CREATE );
+            URL_INICIO_RUTA = getString( R.string.url_server_backend ) + "registro_inicio_ruta.jsp";
+            URL_FIN_RUTA = getString( R.string.url_server_backend ) + "registro_fin_ruta.jsp";
+            URL_LISTA_PDV = getString( R.string.url_server_backend ) + "lista_pdv_fdv.jsp";
+            URL_TIPO_INSPECCION = getString( R.string.url_server_backend ) + "consultar_tipos_inspeccion_empresa.jsp";
+            URL_REGISTRAR_INSPECCION = getString( R.string.url_server_backend ) + "registrar_inspeccion.jsp";
+            URL_IMAGEN_FOOTER = getString( R.string.url_server_backend ) + "consultar_imagenes_banner.jsp";
+            URL_REGISTRO_ALERTA = getString(R.string.url_server_backend) + "registrar_alerta.jsp";
+            URL_CERRAR_SESION = getString(R.string.url_server_backend) + "cerrar_sesion.jsp";
+            URL_TIPOS_ALERTAS_SOS = getString(R.string.url_server_backend) + "consultar_tipos_alertas_panico.jsp";
 
-        URL_INICIO_RUTA = getString( R.string.url_server_backend ) + "registro_inicio_ruta.jsp";
-        URL_FIN_RUTA = getString( R.string.url_server_backend ) + "registro_fin_ruta.jsp";
-        URL_LISTA_PDV = getString( R.string.url_server_backend ) + "lista_pdv_fdv.jsp";
-        URL_TIPO_INSPECCION = getString( R.string.url_server_backend ) + "consultar_tipos_inspeccion_empresa.jsp";
-        URL_REGISTRAR_INSPECCION = getString( R.string.url_server_backend ) + "registrar_inspeccion.jsp";
-        URL_IMAGEN_FOOTER = getString( R.string.url_server_backend ) + "consultar_imagenes_banner.jsp";
-        URL_REGISTRO_ALERTA = getString(R.string.url_server_backend) + "registrar_alerta.jsp";
-        URL_CERRAR_SESION = getString(R.string.url_server_backend) + "cerrar_sesion.jsp";
-        URL_TIPOS_ALERTAS_SOS = getString(R.string.url_server_backend) + "consultar_tipos_alertas_panico.jsp";
+            fuentes = new CustomFonts( getAssets() );
 
-        fuentes = new CustomFonts( getAssets() );
+            //Definir Toolbar como ActionBar
+            Toolbar bar = findViewById( R.id.toolbar );
+            setSupportActionBar(bar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //Definir Toolbar como ActionBar
-        Toolbar bar = findViewById( R.id.toolbar );
-        setSupportActionBar(bar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            contentHeader = findViewById( R.id.layoutContentHeader );
 
-        contentHeader = findViewById( R.id.layoutContentHeader );
+            //Obtener la instancia del Objeto MapaFragment para interactuar con sus métodos
+            mf = (MapaFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentMap);
 
-        //Obtener la instancia del Objeto MapaFragment para interactuar con sus métodos
-        mf = (MapaFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentMap);
+            Button btInspeccion = (Button) findViewById( R.id.btInspeccion );
+            btInspeccion.setTypeface(fuentes.getBoldFont());
 
-        Button btInspeccion = (Button) findViewById( R.id.btInspeccion );
-        btInspeccion.setTypeface(fuentes.getBoldFont());
+            //ImageSwitcher banner footer
+            isFooter = findViewById( R.id.isFooter );
+            isFooter.setFactory(() -> new ImageView( PrincipalActivity.this ));
 
-        //ImageSwitcher banner footer
-        isFooter = findViewById( R.id.isFooter );
-        isFooter.setFactory(() -> new ImageView( PrincipalActivity.this ));
+            sharedPref = getSharedPreferences(getString(R.string.key_shared_preferences), Context.MODE_PRIVATE);
 
-        sharedPref = getSharedPreferences(getString(R.string.key_shared_preferences), Context.MODE_PRIVATE);
+            //Obtener datos extras enviados en el Intent
+            bundle = getIntent().getExtras();
+            id_vehiculo = bundle.getString("id_vehiculo");
+            id_ruta = bundle.getString("id_ruta");
+            nombre_usuario = bundle.getString("nombre_usuario");
+            id_usuario = bundle.getString("id_usuario");
+            id_perfil = bundle.getString("id_perfil");
+            id_fdv = bundle.getString("id_fdv");
+            id_perfil = bundle.getString("id_perfil");
+            img_url_usuario = bundle.getString("imagen");
 
-        //Obtener datos extras enviados en el Intent
-        bundle = getIntent().getExtras();
-        id_vehiculo = bundle.getString("id_fdv");
-        id_ruta = bundle.getString("id_ruta");
-        nombre_usuario = bundle.getString("nombre_usuario");
-        id_usuario = bundle.getString("id_usuario");
-        id_perfil = bundle.getString("id_perfil");
-        id_fdv = bundle.getString("id_fdv");
-        id_perfil = bundle.getString("id_perfil");
-        img_url_usuario = bundle.getString("imagen");
+            //Drawer Menu
+            drawer_layout = findViewById( R.id.drawer_layout );
+            navigation_view = findViewById( R.id.navigationView );
+            View layout_navigation_drawer = findViewById( R.id.view_drawer_navigation );
+            TextView tv_label_notificacion = layout_navigation_drawer.findViewById( R.id.tvLabelNotificacion );
+            tv_label_notificacion.setTypeface( fuentes.getRobotoThinFont() );
+            TextView tv_label_ruta = layout_navigation_drawer.findViewById( R.id.tvLabelRuta );
+            tv_label_ruta.setTypeface( fuentes.getRobotoThinFont() );
+            TextView tv_label_msg = layout_navigation_drawer.findViewById( R.id.tvLabelMensajes );
+            tv_label_msg.setTypeface( fuentes.getRobotoThinFont() );
+            TextView tv_label_alertas = layout_navigation_drawer.findViewById( R.id.tvLabelAlertas );
+            tv_label_alertas.setTypeface( fuentes.getRobotoThinFont() );
+            TextView tv_label_chat =  layout_navigation_drawer.findViewById( R.id.tvLabelChat );
+            tv_label_chat.setTypeface( fuentes.getRobotoThinFont() );
+            TextView tv_label_control_pdv = layout_navigation_drawer.findViewById( R.id.tvLabelControlPDV );
+            tv_label_control_pdv.setTypeface( fuentes.getRobotoThinFont() );
+            TextView tv_label_agendamiento = layout_navigation_drawer.findViewById( R.id.tvLabelAgendamiento );
+            tv_label_agendamiento.setTypeface( fuentes.getRobotoThinFont() );
+            TextView tv_label_concurso = layout_navigation_drawer.findViewById( R.id.tvLabelConcurso );
+            tv_label_concurso.setTypeface( fuentes.getRobotoThinFont() );
+            TextView tv_label_logout = layout_navigation_drawer.findViewById( R.id.tvLabelLogout );
+            tv_label_logout.setTypeface( fuentes.getRobotoThinFont() );
+            TextView tv_nombre_usuario = layout_navigation_drawer.findViewById( R.id.tvNameUser );
+            tv_nombre_usuario.setText( nombre_usuario );
+            TextView tvEmpresa = layout_navigation_drawer.findViewById( R.id.tvEmpresa );
+            tvEmpresa.setText( getNombreEmpresa() );
 
-        //Drawer Menu
-        drawer_layout = findViewById( R.id.drawer_layout );
-        navigation_view = findViewById( R.id.navigationView );
-        View layout_navigation_drawer = findViewById( R.id.view_drawer_navigation );
-        TextView tv_label_notificacion = layout_navigation_drawer.findViewById( R.id.tvLabelNotificacion );
-        tv_label_notificacion.setTypeface( fuentes.getRobotoThinFont() );
-        TextView tv_label_ruta = layout_navigation_drawer.findViewById( R.id.tvLabelRuta );
-        tv_label_ruta.setTypeface( fuentes.getRobotoThinFont() );
-        TextView tv_label_msg = layout_navigation_drawer.findViewById( R.id.tvLabelMensajes );
-        tv_label_msg.setTypeface( fuentes.getRobotoThinFont() );
-        TextView tv_label_alertas = layout_navigation_drawer.findViewById( R.id.tvLabelAlertas );
-        tv_label_alertas.setTypeface( fuentes.getRobotoThinFont() );
-        TextView tv_label_chat =  layout_navigation_drawer.findViewById( R.id.tvLabelChat );
-        tv_label_chat.setTypeface( fuentes.getRobotoThinFont() );
-        TextView tv_label_control_pdv = layout_navigation_drawer.findViewById( R.id.tvLabelControlPDV );
-        tv_label_control_pdv.setTypeface( fuentes.getRobotoThinFont() );
-        TextView tv_label_agendamiento = layout_navigation_drawer.findViewById( R.id.tvLabelAgendamiento );
-        tv_label_agendamiento.setTypeface( fuentes.getRobotoThinFont() );
-        TextView tv_label_concurso = layout_navigation_drawer.findViewById( R.id.tvLabelConcurso );
-        tv_label_concurso.setTypeface( fuentes.getRobotoThinFont() );
-        TextView tv_label_logout = layout_navigation_drawer.findViewById( R.id.tvLabelLogout );
-        tv_label_logout.setTypeface( fuentes.getRobotoThinFont() );
-        TextView tv_nombre_usuario = layout_navigation_drawer.findViewById( R.id.tvNameUser );
-        tv_nombre_usuario.setText( nombre_usuario );
-        TextView tvEmpresa = layout_navigation_drawer.findViewById( R.id.tvEmpresa );
-        tvEmpresa.setText( getNombreEmpresa() );
+            civUsuario = layout_navigation_drawer.findViewById( R.id.civImageUsuario );
 
-        civUsuario = layout_navigation_drawer.findViewById( R.id.civImageUsuario );
+            LocalBroadcastManager.getInstance(this).registerReceiver(
+                    new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            String latitude = intent.getStringExtra(LocationMonitoringService.EXTRA_LATITUDE);
+                            String longitude = intent.getStringExtra(LocationMonitoringService.EXTRA_LONGITUDE);
+
+                            if (latitude != null && longitude != null) {
+                                //   mMsgView.setText(getString(R.string.msg_location_service_started) + "\n Latitude : " + latitude + "\n Longitude: " + longitude);
+                            }
+                        }
+                    }, new IntentFilter(LocationMonitoringService.ACTION_LOCATION_BROADCAST)
+            );
+        }
+        catch (Exception e)
+        {
+            Log.i("PA-onCreate", e.getLocalizedMessage() );
+        }
 
         //Datos para testing-No incluir en liberación
 //        SharedPreferences.Editor editor = sharedPref.edit();
@@ -256,6 +285,12 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
         {
             Log.e("Exception", "PrincipalActivity.onResume.Exception:"+ e.toString() );
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        MultiDex.install(this);
     }
 
     @Override
@@ -312,6 +347,32 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
             requestPermissions();
         }
         return true;
+    }
+
+    private void promptInternetConnect() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(PrincipalActivity.this);
+        builder.setTitle( getString(R.string.title_alert_no_intenet));
+        builder.setMessage( getString( R.string.msg_alert_no_internet ));
+
+        String positiveText = getString( R.string.btn_label_refresh );
+        builder.setPositiveButton(positiveText,
+                (dialog, which) -> {
+                    //Block the Application Execution until user grants the permissions
+                    if (startStep2(dialog))
+                    {
+                        //Now make sure about location permission.
+                        if (checkPermissions()) {
+                            //Step 2: Start the Location Monitor Service
+                            //Everything is there to start the service.
+                            startStep3();
+                        } else if (!checkPermissions()) {
+                            requestPermissions();
+                        }
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void startStep3(){
@@ -499,6 +560,72 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                 .setAction(getString(actionStringId), listener).show();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        try {
+            switch (requestCode) {
+                case REQUEST_PERMISSIONS_LOCATION:
+                    if (grantResults.length <= 0) {
+                        // If img_user interaction was interrupted, the permission request is cancelled and you
+                        // receive empty arrays.
+                        Log.i(TAG, "User interaction was cancelled.");
+                    } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            requestPermissions(); //solicitar para pasar a Background location
+                        }
+                        startStep3();
+                    } else {
+                        // Permission denied.
+                        // Notify the img_user via a SnackBar that they have rejected a core permission for the
+                        // app, which makes the Activity useless. In a real app, core permissions would
+                        // typically be best requested during a welcome-screen flow.
+                        // Additionally, it is important to remember that a permission might have been
+                        // rejected without asking the img_user for permission (device policy or "Never ask
+                        // again" prompts). Therefore, a img_user interface affordance is typically implemented
+                        // when permissions are denied. Otherwise, your app could appear unresponsive to
+                        // touches or interactions which have required permissions.
+                        showSnackbar(R.string.permission_denied_explanation,
+                                R.string.settings, view -> {
+                                    // Build intent that displays the App settings screen.
+                                    Intent intent = new Intent();
+                                    intent.setAction(
+                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    Uri uri = Uri.fromParts("package",
+                                            BuildConfig.APPLICATION_ID, null);
+                                    intent.setData(uri);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                });
+                    }
+                    break;
+                case REQUEST_PERMISSIONS_BACKGROUND_LOCATION:
+                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                        new Utilidades().mostrarSimpleMensaje(this,
+                                getString(R.string.txt_acceso_ubicacion),
+                                getString(R.string.txt_permission_background_location_denied),
+                                true);
+                    } else {
+                        startStep3();
+                        validarGPSServicio();
+                    }
+                    break;
+                case PERMISION_REQUEST_CALL_PHONE:
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        procesarAlerta();
+                    } else {
+                        new Utilidades().mostrarSimpleMensaje(this, "Alerta S.O.S.", getString(R.string.txt_msg_permiso_telefono_denegado), true);
+                    }
+                    return;
+                default:
+                    startStep3();
+                    validarGPSServicio();
+                    break;
+            }
+        }catch (Exception e)
+        {}
+    }
+
     public int getStateRequestPermisionLocation(){
         return state_request_permision_location;
     }
@@ -515,6 +642,9 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
 
     @Override
     protected void onDestroy() {
+        stopService(new Intent(this, LocationMonitoringService.class));
+        mAlreadyStartedService = false;
+        //Ends.............................
         super.onDestroy();
         limpiarMemoria();
     }
@@ -644,12 +774,7 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                 {
                     pos_banner = 0;
                 }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        isFooter.setImageDrawable( new BitmapDrawable( getResources(), imgs_banner.get( pos_banner ) ) );
-                    }
-                });
+                runOnUiThread(() -> isFooter.setImageDrawable( new BitmapDrawable( getResources(), imgs_banner.get( pos_banner ) ) ));
             }
         }, 0, BANNER_DURACION);
     }
@@ -739,8 +864,9 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
     public boolean inspeccionRealizada()
     {
         boolean res = false;
-        GlobalParametrosGenerales parametros = (GlobalParametrosGenerales) getApplicationContext();
-        String fch_inspeccion = parametros.getFecha_inspeccion();
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.key_shared_preferences), Context.MODE_PRIVATE);
+        String fch_inspeccion = sharedPref.getString("fch_inspeccion", null);
+
         if( fch_inspeccion != null )
         {
             String fch_actual = new SimpleDateFormat("yyyy-MM-dd").format( Calendar.getInstance().getTime() );
@@ -750,6 +876,14 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
             }
         }
         return res;
+    }
+
+    private void actualizarFechaInspeccionSharedPreferences()
+    {
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.key_shared_preferences), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("fch_inspeccion", new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime() ) );
+        editor.apply();
     }
 
     /**
@@ -838,23 +972,13 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                     TextView tvUsuario = vNew.findViewById( R.id.tvNombrePasajero );
                     tvUsuario.setText(nombre_usuario);
                     Button btLista = vNew.findViewById( R.id.btListaPasajeros );
-                    btLista.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //Verificar disponibilidad de Red
-                            if (new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))) {
-                                if (id_fdv != null && !id_fdv.equals("")) {
-                                    postParam = new HashMap<>();
-                                    postParam.put("id_fdv", id_fdv);
-
-                                    ConsultarListaPdvTask cpdv = new ConsultarListaPdvTask();
-                                    cpdv.execute(URL_LISTA_PDV);
-                                } else {
-                                    new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error", getString(R.string.txt_msg_error_id_ruta), true);
-                                }
-                            } else {
-                                new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error red", getString(R.string.txt_msg_error_red), true);
-                            }
+                    btLista.setOnClickListener(v -> {
+                        if (new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))) {
+                            ejecutarConsultaListadoAlumnos();
+                        }else{
+                            //lista de alumnos offline
+                            ArrayList<PDV> arrayAlumnos = new DatabaseHelper( getApplicationContext() ).getListPDVsRuta(id_fdv);
+                            mostrarListaPDV( arrayAlumnos );
                         }
                     });
                     btFinRuta = vNew.findViewById( R.id.btFinRuta );
@@ -872,12 +996,7 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                     viewIni.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
                     Button bt_iniciar = viewIni.findViewById( R.id.btIniciarRuta );
                     bt_iniciar.setTypeface(fuentes.getBoldFont());
-                    bt_iniciar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            clickIniciarRuta( view );
-                        }
-                    });
+                    bt_iniciar.setOnClickListener(view -> clickIniciarRuta( view ));
 
                     contentHeader.removeAllViews();
                     contentHeader.addView(viewIni);
@@ -910,75 +1029,117 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
         //Deshabilitar botón
         btn_activo = (Button) view;
         btn_activo.setEnabled( false );
-        //Verificar disponibilidad de Red
-        if( new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)) )
+        //Verificar asignación del vehículo
+        if( id_vehiculo == null || id_vehiculo.equals("") )
         {
-            if( id_vehiculo != null && !id_vehiculo.equals("") )
-            {
-                if (gpsServ.isCanGetLocation()) {
-                    Location location = gpsServ.getLocation();
-                    if (location != null)
-                    {
-                        if (gpsServ.conectadoSocket() && gpsServ.puedeSocketEnviarMensajes())
-                        {
-                            try {
-                                //Mostrar dialogo
-                                progress_activo = ProgressDialog.show(PrincipalActivity.this, null, getString(R.string.txt_registro_ruta), true);
-                                progress_activo.setCancelable(false);
-                                //Preparar parametros
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                //Enviar mensaje de inicio de ruta a través del Socket
-                                JSONObject msg = new JSONObject();
-                                msg.put("id_ruta", id_fdv);
-                                msg.put("fecha", sdf.format(Calendar.getInstance().getTime()));
-                                msg.put("lat", "" + location.getLatitude());
-                                msg.put("lng", "" + location.getLongitude());
-                                msg.put("tipo", "INI");
-
-                                //No manejar el registro en la BBDD desde el socket, sino desde el WebServices
-                                //El registro del inicio de ruta se realiza en procesarRespuestaServidorSockectGPS();
-                                msg.put("guardar_bbdd", "NO");
-                                msg.put("enviar_notif", "NO");
-                                if (gpsServ.enviarMensajeSocket(msg)) //Esperar respuesta del Sockect
-                                {
-                                    //Establecer espera de respuesta que será enviada desde GPSServices por el Socket Servidor GPS
-                                    OPCION_RES_SOCKECT_GPS = 1;
-
-                                } else//El socket no puede enviar mensajes
-                                {
-                                    new Utilidades().mostrarSimpleMensaje(this, "Inicio de ruta", getString(R.string.txt_msg_error_registro_inicio_ruta), true);
-                                    //Restaurar botón
-                                    btn_activo.setEnabled(true);
-                                    btn_activo = null;
-                                    //cancelar dialogo
-                                    progress_activo.cancel();
-                                    progress_activo = null;
-                                }
-                            } catch (JSONException e) {
-                                Log.e("JSONException", "PrincipalActivity.clickIniciarRuta.JSONException:" + e.toString());
-                                //cancelar dialogo
-                                progress_activo.cancel();
-                                progress_activo = null;
-                                //Procesar inicio de ruta con el WebServices
-                                registrarInicioRutaWebServices(location);
-                            }
-                        } else //Procesar inicio de ruta con el WebServices
-                        {
-                            registrarInicioRutaWebServices(location);
-                        }
-                    }
-                }
-            }else{
-                new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error", getString(R.string.txt_msg_error_id_vehiculo), true);
-                //Restaurar botón
-                btn_activo.setEnabled( true );
-                btn_activo = null;
-            }
-        }else{
-            new Utilidades().mostrarSimpleMensaje(this, "Error red", getString( R.string.txt_msg_error_red ), true  );
+            new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error", getString(R.string.txt_msg_error_id_vehiculo), true);
             //Restaurar botón
             btn_activo.setEnabled( true );
             btn_activo = null;
+        }else if( !gpsServ.isCanGetLocation() &&  gpsServ.getLocation() != null )
+        {
+            //Sin acceso a la ubicación
+            new Utilidades().mostrarSimpleMensaje(this, getString(R.string.txt_connection),
+                    getString( R.string.txt_error_acceso_ubiacacion ),
+                    true  );
+            //Restaurar botón
+            btn_activo.setEnabled( true );
+            btn_activo = null;
+        }else{
+            Location location = gpsServ.getLocation();
+            //Verificar disponibilidad de Red
+            if( new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)) )
+            {
+                if (gpsServ.conectadoSocket() && gpsServ.puedeSocketEnviarMensajes())
+                {
+                    try {
+                        //Mostrar dialogo
+                        progress_activo = ProgressDialog.show(PrincipalActivity.this, null, getString(R.string.txt_registro_ruta), true);
+                        progress_activo.setCancelable(false);
+                        //Preparar parametros
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        //Enviar mensaje de inicio de ruta a través del Socket
+                        JSONObject msg = new JSONObject();
+                        msg.put("id_ruta", id_fdv);
+                        msg.put("fecha", sdf.format(Calendar.getInstance().getTime()));
+                        msg.put("lat", "" + location.getLatitude());
+                        msg.put("lng", "" + location.getLongitude());
+                        msg.put("tipo", "INI");
+
+                        //No manejar el registro en la BBDD desde el socket, sino desde el WebServices
+                        //El registro del inicio de ruta se realiza en procesarRespuestaServidorSockectGPS();
+                        msg.put("guardar_bbdd", "NO");
+                        msg.put("enviar_notif", "NO");
+                        if (gpsServ.enviarMensajeSocket(msg)) //Esperar respuesta del Sockect
+                        {
+                            //Establecer espera de respuesta que será enviada desde GPSServices por el Socket Servidor GPS
+                            OPCION_RES_SOCKECT_GPS = 1;
+
+                        } else//El socket no puede enviar mensajes
+                        {
+                            new Utilidades().mostrarSimpleMensaje(this, "Inicio de ruta", getString(R.string.txt_msg_error_registro_inicio_ruta), true);
+                            //Restaurar botón
+                            btn_activo.setEnabled(true);
+                            btn_activo = null;
+                            //cancelar dialogo
+                            progress_activo.cancel();
+                            progress_activo = null;
+                        }
+                    } catch (JSONException e) {
+                        Log.e("JSONException", "PrincipalActivity.clickIniciarRuta.JSONException:" + e.toString());
+                        //cancelar dialogo
+                        progress_activo.cancel();
+                        progress_activo = null;
+                        //Procesar inicio de ruta con el WebServices
+                        registrarInicioRutaWebServices(location);
+                    }
+                } else //Procesar inicio de ruta con el WebServices
+                {
+                    registrarInicioRutaWebServices(location);
+                }
+
+            }else{
+                long id = new DatabaseHelper( getApplicationContext() )
+                        .setInicioRuta( new MvtoInicioRuta(
+                                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()),
+                                id_ruta,
+                                location.getLatitude(),
+                                location.getLongitude()
+                        ));
+                if( id > 0 )
+                {
+                    finalizarRegistroInicioRuta();
+                }else{
+                    new Utilidades().mostrarSimpleMensaje(this, getString(R.string.txt_title_error_database),
+                            getString( R.string.txt_msg_error_insert_database_inicio_ruta ),
+                            true  );
+                    //Restaurar botón
+                    btn_activo.setEnabled( true );
+                    btn_activo = null;
+                }
+            }
+        }
+    }
+
+    /**
+     * Método encargado de iniciar la consutla del listado de alumnos
+     */
+    public void ejecutarConsultaListadoAlumnos()
+    {
+        //Verificar disponibilidad de Red
+        if (new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)))
+        {
+            if (id_fdv != null && !id_fdv.equals("")) {
+                postParam = new HashMap<>();
+                postParam.put("id_fdv", id_fdv);
+
+                ConsultarListaPdvTask cpdv = new ConsultarListaPdvTask();
+                cpdv.execute(URL_LISTA_PDV);
+            } else {
+                new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error", getString(R.string.txt_msg_error_id_ruta), true);
+            }
+        }else{
+            new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, getString(R.string.txt_connection), getString(R.string.txt_msg_error_red), true);
         }
     }
 
@@ -1014,11 +1175,6 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
         editor.putString("fin_ruta", "NO");
         editor.apply();
         gpsServ.setESTADO_RUTA( RUTA_INICIADA ); //Difinir estado de ruta para el servicio GPS
-
-        //Limpiar listado PDV con CheckIn
-        GlobalParametrosGenerales parametros = (GlobalParametrosGenerales) getApplicationContext();
-        parametros.limpiarPDVCheckIn();
-
         cambiarInicioRuta(1);
     }
 
@@ -1030,74 +1186,92 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
         //Deshabilitar botón
         btn_activo = (Button) view;
         btn_activo.setEnabled( false );
-        //Verificar disponibilidad de Red
-        if( new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)) )
-        {
-            if( id_vehiculo != null && !id_vehiculo.equals("") )
-            {
-                if( gpsServ.isCanGetLocation() )
-                {
-                    Location location = gpsServ.getLocation();
-                    if( location != null )
-                    {
-                        if( gpsServ.conectadoSocket() && gpsServ.puedeSocketEnviarMensajes() ) {
-                            try {
-                                //Mostrar dialogo
-                                progress_activo = ProgressDialog.show(PrincipalActivity.this, null, getString( R.string.txt_registro_fin_ruta), true);
-                                progress_activo.setCancelable(false);
-                                //Preparar parámetros
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                //Enviar mensaje de fin de ruta a través del Socket
-                                JSONObject msg = new JSONObject();
-                                msg.put("id_ruta", id_ruta);
-                                msg.put("fecha", sdf.format(Calendar.getInstance().getTime()));
-                                msg.put("lat", "" + location.getLatitude());
-                                msg.put("lng", "" + location.getLongitude());
-                                msg.put("tipo", "FIN");
 
-                                //No manejar el registro en la BBDD desde el socket, sino desde el WebServices
-                                //El registro del inicio de ruta se realiza en procesarRespuestaServidorSockectGPS();
-                                msg.put("guardar_bbdd", "NO");
-                                msg.put("enviar_notif", "NO");
-                                if( gpsServ.enviarMensajeSocket(msg) )
-                                {
-                                    //Establecer espera de respuesta que será enviada desde GPSServices por el Socket Servidor GPS
-                                    OPCION_RES_SOCKECT_GPS = 2;
-                                }else//El socket no puede enviar mensajes
-                                {
-                                    new Utilidades().mostrarSimpleMensaje(this, "Fin de ruta", getString(R.string.txt_msg_error_registro_fin_ruta), true);
-                                    //Restaurar botón
-                                    btn_activo.setEnabled( true );
-                                    btn_activo = null;
-                                    //cancelar dialogo
-                                    progress_activo.cancel();
-                                    progress_activo = null;
-                                }
-                            } catch (JSONException e) {
-                                Log.e("JSONException", "PrincipalActivity.clickFinalizarRuta.JSONException:" + e.toString());
-                                //cancelar dialogo
-                                progress_activo.cancel();
-                                progress_activo = null;
-                                //Procesar final de ruta con el WebServices
-                                registrarFinalRutaWebServices( location );
-                            }
-                        }else //Procesar final de ruta con el WebServices
-                        {
-                            registrarFinalRutaWebServices( location );
-                        }
-                    }
-                }
-            }else{
-                new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error", getString(R.string.txt_msg_error_id_vehiculo), true);
-                //Restaurar botón
-                btn_activo.setEnabled( true );
-                btn_activo = null;
-            }
-        }else{
-            new Utilidades().mostrarSimpleMensaje(this, "Error red", getString( R.string.txt_msg_error_red ), true  );
+        //Verificar disponibilidad de los datos del vehiculo
+        if( id_vehiculo == null && id_vehiculo.equals("") )
+        {
+            new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error", getString(R.string.txt_msg_error_id_vehiculo), true);
             //Restaurar botón
             btn_activo.setEnabled( true );
             btn_activo = null;
+        }else if( !gpsServ.isCanGetLocation() &&  gpsServ.getLocation() != null )
+        {
+            //Sin acceso a la ubicación
+            new Utilidades().mostrarSimpleMensaje(this, getString(R.string.txt_connection),
+                    getString( R.string.txt_error_acceso_ubiacacion ),
+                    true  );
+            //Restaurar botón
+            btn_activo.setEnabled( true );
+            btn_activo = null;
+        }else {
+            Location location = gpsServ.getLocation();
+            //Verificar disponibilidad de Red
+            if (new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)))
+            {
+                if (gpsServ.conectadoSocket() && gpsServ.puedeSocketEnviarMensajes()) {
+                    try {
+                        //Mostrar dialogo
+                        progress_activo = ProgressDialog.show(PrincipalActivity.this, null, getString(R.string.txt_registro_fin_ruta), true);
+                        progress_activo.setCancelable(false);
+                        //Preparar parámetros
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        //Enviar mensaje de fin de ruta a través del Socket
+                        JSONObject msg = new JSONObject();
+                        msg.put("id_ruta", id_ruta);
+                        msg.put("fecha", sdf.format(Calendar.getInstance().getTime()));
+                        msg.put("lat", "" + location.getLatitude());
+                        msg.put("lng", "" + location.getLongitude());
+                        msg.put("tipo", "FIN");
+
+                        //No manejar el registro en la BBDD desde el socket, sino desde el WebServices
+                        //El registro del inicio de ruta se realiza en procesarRespuestaServidorSockectGPS();
+                        msg.put("guardar_bbdd", "NO");
+                        msg.put("enviar_notif", "NO");
+                        if (gpsServ.enviarMensajeSocket(msg)) {
+                            //Establecer espera de respuesta que será enviada desde GPSServices por el Socket Servidor GPS
+                            OPCION_RES_SOCKECT_GPS = 2;
+                        } else//El socket no puede enviar mensajes
+                        {
+                            new Utilidades().mostrarSimpleMensaje(this, "Fin de ruta", getString(R.string.txt_msg_error_registro_fin_ruta), true);
+                            //Restaurar botón
+                            btn_activo.setEnabled(true);
+                            btn_activo = null;
+                            //cancelar dialogo
+                            progress_activo.cancel();
+                            progress_activo = null;
+                        }
+                    } catch (JSONException e) {
+                        Log.e("JSONException", "PrincipalActivity.clickFinalizarRuta.JSONException:" + e.toString());
+                        //cancelar dialogo
+                        progress_activo.cancel();
+                        progress_activo = null;
+                        //Procesar final de ruta con el WebServices
+                        registrarFinalRutaWebServices(location);
+                    }
+                } else //Procesar final de ruta con el WebServices
+                {
+                    registrarFinalRutaWebServices(location);
+                }
+            } else {
+                long id = new DatabaseHelper( getApplicationContext() )
+                        .setFinRuta( new MvtoFinRuta(
+                                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()),
+                                id_ruta,
+                                location.getLatitude(),
+                                location.getLongitude()
+                        ));
+                if( id > 0 )
+                {
+                    finalizarRegistroFinalRuta();
+                }else{
+                    new Utilidades().mostrarSimpleMensaje(this, getString(R.string.txt_title_error_database),
+                            getString( R.string.txt_msg_error_insert_database_fin_ruta ),
+                            true  );
+                    //Restaurar botón
+                    btn_activo.setEnabled( true );
+                    btn_activo = null;
+                }
+            }
         }
     }
 
@@ -1217,6 +1391,25 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
     }
 
     /**
+     * Función encargada de visualizar el mensaje de confirmación
+     * @param tipo_check String
+     * @param rutaAlumno {@link RutaAlumno}
+     */
+    private void procesarRegistroCheck(String tipo_check, RutaAlumno rutaAlumno )
+    {
+        String msg = "("+ rutaAlumno.getNombreCompleto() +")";
+        if( tipo_check.equals("0") )
+        {
+            msg += getString(R.string.txt_msg_checkin) ;
+        }
+        if( tipo_check.equals("1") )
+        {
+            msg += getString(R.string.txt_msg_checkout) ;
+        }
+        new Utilidades().mostrarSimpleMensaje( PrincipalActivity.this, getString( R. string.txt_titulo_dialog_check ), msg, true );
+    }
+
+    /**
      * Método encargado de obtener el objeto Location a partir de GPSServices
      * return Location del usuario
      * */
@@ -1235,23 +1428,7 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
      * */
     public String getNombreEmpresa()
     {
-        try {
-            GlobalParametrosGenerales parametros = (GlobalParametrosGenerales) getApplicationContext();
-            JSONObject empresa = parametros.getEmpresa();
-            if (empresa != null) {
-                return empresa.getString("nombre");
-            }else{
-                return null;
-            }
-        }catch( JSONException e )
-        {
-            Log.e("JSONException","PDVRutaAdapter.getNombreColegio.JSONException:"+ e.toString() );
-            return null;
-        }catch(Exception e )
-        {
-            Log.e("Exception","PDVRutaAdapter.getNombreColegio.Exception:"+ e.toString() );
-            return null;
-        }
+        return new DatabaseHelper( getApplicationContext() ).getUsuario().getEmpresa();
     }
 
     /**
@@ -1259,9 +1436,9 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
      * */
     public void mostrarDialogoDeclaracionInspeccionPrevia()
     {
-        //Consultar Parámetros globales
-        final GlobalParametrosGenerales global_param = (GlobalParametrosGenerales) getApplicationContext();
-        if( global_param.existenParametros() && global_param.getValue( "texto_inspeccion_previa", 2) != null )
+        ///Consultar Parámetros globales
+        String txtInspeccion = new DatabaseHelper( getApplicationContext() ).getValue("texto_inspeccion_previa", 2);
+        if( txtInspeccion != null )
         {
             final String empresa = getNombreEmpresa();
             if( empresa != null ) {
@@ -1279,47 +1456,25 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                 tvTitulo.setTypeface(fuentes.getBoldFont());
 
                 TextView tvMsgDecla = (TextView) view.findViewById(R.id.tvMsgDecla);
-                tvMsgDecla.setText(global_param.getValue("texto_inspeccion_previa", 2));
+                tvMsgDecla.setText(txtInspeccion);
                 tvMsgDecla.setTypeface(fuentes.getRegularFont());
 
                 final Button btContinuar = (Button) view.findViewById(R.id.btContinuar);
                 btContinuar.setEnabled(false);
                 btContinuar.setTypeface(fuentes.getRobotoThinFont());
-                btContinuar.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //cerrar dialogo
-                        dialog.dismiss();
-                        //Verificar disponibilidad de Red
-                        if (new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))) {
-                            //Consultar los datos de la inspección previa y visualizar el dialogo
-                            postParam = new HashMap<String, String>();
-                            postParam.put("empresa", empresa);
-                            ConsultarDatosInspeccionTask ctnot = new ConsultarDatosInspeccionTask();
-                            ctnot.execute(URL_TIPO_INSPECCION);
-                        } else {
-                            new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error red", getString(R.string.txt_msg_error_red), true);
-                        }
-                    }
+                btContinuar.setOnClickListener(v -> {
+                    //cerrar dialogo
+                    dialog.dismiss();
+                    mostrarDialogoInspeccion();
                 });
 
                 Switch swAceptar = (Switch) view.findViewById(R.id.swDeclaracion);
                 swAceptar.setTypeface(fuentes.getRegularFont());
-                swAceptar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        btContinuar.setEnabled(isChecked);
-                    }
-                });
+                swAceptar.setOnCheckedChangeListener((buttonView, isChecked) -> btContinuar.setEnabled(isChecked));
 
                 Button btCancelar = (Button) view.findViewById(R.id.btCancelar);
                 btCancelar.setTypeface(fuentes.getRobotoThinFont());
-                btCancelar.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
+                btCancelar.setOnClickListener(view1 -> dialog.dismiss());
 
                 dialog.show();
             }else{
@@ -1333,7 +1488,7 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
     /**
      * Método encargado de visualizar el dialogo con el listado de inspección     *
      */
-    public void mostrarDialogoInspeccion(ArrayList<TipoInspeccion> list_inspeccion)
+    public void mostrarDialogoInspeccion()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder( PrincipalActivity.this );
 
@@ -1347,16 +1502,20 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
         TextView tvTitulo = view.findViewById( R.id.tvTitulo );
         tvTitulo.setTypeface( fuentes.getBoldFont() );
 
+        //Consultar el listado de los tipos de inspección
+        ArrayList<TipoInspeccion> list_inspeccion = new DatabaseHelper( getApplicationContext() ).getTiposInspeccionAdapter();
+
         final InspeccionAdapter adapter = new InspeccionAdapter( PrincipalActivity.this, list_inspeccion );
         ListView lista =  view.findViewById( R.id.lvListaInspeccion );
         lista.setAdapter( adapter );
 
         Button btGuardar = view.findViewById( R.id.btGuardar );
         btGuardar.setTypeface( fuentes.getRobotoThinFont() );
-        btGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if( adapter.inspeccionFinalizada() )
+        btGuardar.setOnClickListener(view1 -> {
+            if( adapter.inspeccionFinalizada() )
+            {
+                //Verificar disponiblidad de Internet
+                if( new Utilidades().redDisponible((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)) )
                 {
                     postParam = new HashMap<>();
                     String fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -1368,8 +1527,29 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                     RegistrarInspeccionTask rit = new RegistrarInspeccionTask(dialog);
                     rit.execute( URL_REGISTRAR_INSPECCION );
                 }else{
-                    new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this,"Inspección previa",getString( R.string.txt_msg_error_inspeccion_incompleta),true);
+                    //Guardar localmente
+                    DatabaseHelper databaseHelper = new DatabaseHelper( getApplicationContext() );
+                    ArrayList<TipoInspeccion> inspecciones = adapter.getLista_inspeccion();
+                    for( TipoInspeccion tipoInspeccion : inspecciones)
+                    {
+                        databaseHelper.setInspeccion( new Inspeccion(
+                                        tipoInspeccion.getId(),
+                                        id_vehiculo,
+                                        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()),
+                                        new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()),
+                                        ""+tipoInspeccion.getValoracion()
+                                )
+                        );
+                    }
+                    //Actualizar fecha inspección en shared preferences
+                    actualizarFechaInspeccionSharedPreferences();
+                    //Cambiar botón principal, cerrar dialogo de inspección
+                    cambiarInicioRuta(2);
+                    dialog.dismiss();
+                    new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, getString(R.string.txt_inspeccion), getString(R.string.txt_registro_inspeccion_ok), true);
                 }
+            }else{
+                new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this,"Inspección previa",getString( R.string.txt_msg_error_inspeccion_incompleta),true);
             }
         });
 
@@ -1429,46 +1609,29 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
         }
     }
 
-    /**
-     * Método encargado de cargar el listado de PDV, filtrando solo los que tienen CheckIn realizado,
-     * Adicionalmente consulta los productos de la empresa*/
-    public void cargarListaPDV( JSONArray arrayPDV ) {
-        GlobalParametrosGenerales parametros = (GlobalParametrosGenerales) getApplicationContext();
-        try
+    public PDV crearPDVRuta( JSONObject jsonPDV )
+    {
+        try{
+            String id = jsonPDV.getString("id");
+            String nombre = jsonPDV.getString("nombre");
+            String nombre_contacto = jsonPDV.getString("nombre_contacto");
+            String apellido_contacto = jsonPDV.getString("apellido_contacto");
+            String direccion = jsonPDV.getString("direccion");
+            String telefono = jsonPDV.getString("telefono");
+            String celular = jsonPDV.getString("celular");
+            String email = jsonPDV.getString("email");
+            String lng = jsonPDV.getString("lng");
+            String lat = jsonPDV.getString("lat");
+            String zona = jsonPDV.getString("zona");
+            int in = jsonPDV.getInt("estado_in");
+            int out = jsonPDV.getInt("estado_out");
+            int aus  = jsonPDV.getInt("estado_ausente");
+            return new PDV(id, nombre, nombre_contacto, apellido_contacto, direccion, telefono, celular, email, lat, lng, zona, in,out,aus);
+        }catch (JSONException e )
         {
-            ArrayList<PDV> arrayPdvs = new ArrayList<>();
-            for( int i=0; i < arrayPDV.length(); i++ )
-            {
-                JSONObject tmp = arrayPDV.getJSONObject(i);
-                String id = tmp.getString("id");
-                String nombre = tmp.getString("nombre");
-                String nombre_contacto = tmp.getString("nombre_contacto");
-                String apellido_contacto = tmp.getString("apellido_contacto");
-                String direccion = tmp.getString("direccion");
-                String telefono = tmp.getString("telefono");
-                String celular = tmp.getString("celular");
-                String email = tmp.getString("email");
-                String lng = tmp.getString("lng");
-                String lat = tmp.getString("lat");
-                String zona = tmp.getString("zona");
-                int in = tmp.getInt("estado_in");
-                int out = tmp.getInt("estado_out");
-                int aus  = tmp.getInt("estado_ausente");
-                PDV pdv = new PDV(id, nombre, nombre_contacto, apellido_contacto, direccion, telefono, celular, email, lat, lng, zona, in,out,aus);
-                arrayPdvs.add( pdv );
-
-                //Validar CheckIn del PDV y agregarlo si es neceario al listado general
-                if( in > 0 ){
-                    parametros.agregarPDVCheckIn( pdv );
-                }
-            }
-            mostrarListaPDV(arrayPdvs);
-            validarOUTsFinalRuta(arrayPdvs);
-        } catch (JSONException e) {
-        Log.e("JSONException", "NuevoPedidoActivity.cargarListaPDV.JSONException: " + e.toString());
+            Log.e("PA-JSONException", e.toString());
         }
-
-
+        return null;
     }
 
     /**
@@ -1584,71 +1747,6 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
     {
         new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, getString(R.string.txt_nueva_alerta), getString(R.string.txt_registro_alerta_ok), true);
         onResume();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_PERMISSIONS_LOCATION:
-                if (grantResults.length <= 0) {
-                    // If img_user interaction was interrupted, the permission request is cancelled and you
-                    // receive empty arrays.
-                    Log.i(TAG, "User interaction was cancelled.");
-                }else if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ) {
-                        requestPermissions(); //solicitar para pasar a Background location
-                    }
-                    startStep3();
-                }else{
-                    // Permission denied.
-                    // Notify the img_user via a SnackBar that they have rejected a core permission for the
-                    // app, which makes the Activity useless. In a real app, core permissions would
-                    // typically be best requested during a welcome-screen flow.
-                    // Additionally, it is important to remember that a permission might have been
-                    // rejected without asking the img_user for permission (device policy or "Never ask
-                    // again" prompts). Therefore, a img_user interface affordance is typically implemented
-                    // when permissions are denied. Otherwise, your app could appear unresponsive to
-                    // touches or interactions which have required permissions.
-                    showSnackbar(R.string.permission_denied_explanation,
-                            R.string.settings, view -> {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",
-                                        BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            });
-                }
-                break;
-            case REQUEST_PERMISSIONS_BACKGROUND_LOCATION:
-                if(grantResults[0] == PackageManager.PERMISSION_DENIED)
-                {
-                    new Utilidades().mostrarSimpleMensaje(this,
-                            getString(R.string.txt_acceso_ubicacion),
-                            getString( R.string.txt_permission_background_location_denied ),
-                            true);
-                }else{
-                    startStep3();
-                    validarGPSServicio();
-                }
-                break;
-            case PERMISION_REQUEST_CALL_PHONE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    procesarAlerta();
-                } else {
-                    new Utilidades().mostrarSimpleMensaje(this, "Alerta S.O.S.", getString(R.string.txt_msg_permiso_telefono_denegado), true);
-                }
-                return;
-            default:
-                startStep3();
-                validarGPSServicio();
-                break;
-        }
     }
 
     /**
@@ -1821,77 +1919,6 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
     }//ConsultarImagenesBannerTask
 
     /**
-     * Clase encargada de procesar la consulta de los tipos de inspección
-     * */
-    private class ConsultarDatosInspeccionTask extends AsyncTask<String, Void, JSONObject>
-    {
-        ProgressDialog progreso;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progreso = ProgressDialog.show( PrincipalActivity.this, null, getString( R.string.txt_consulta_inspeccion), true);
-            progreso.setCancelable(false);
-        }
-
-        @Override
-        protected JSONObject doInBackground(String... url) {
-            ConsultaExterna ce = new ConsultaExterna();
-            return ce.ejecutarHttpPost(url[0], postParam);
-        }
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            super.onPostExecute(result);
-            try
-            {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String estado_ce = result.getString("consulta"); //Estado ConsultaExterna
-                if( estado_ce.equals("OK") )
-                {
-                    String estado = result.getString("estado"); //Estado WebServices
-                    switch( estado)
-                    {
-                        case "OK":
-                            JSONArray tipo_inspeccion = result.getJSONArray("inspeccion");
-                            ArrayList<TipoInspeccion> list_inspeccion = new ArrayList<>();
-                            for( int i=0; i < tipo_inspeccion.length(); i++ )
-                            {
-                                JSONObject tmp = tipo_inspeccion.getJSONObject(i);
-                                TipoInspeccion ta = new TipoInspeccion( tmp.getInt("id"), tmp.getString("desc"), 3 );
-                                list_inspeccion.add( ta );
-                            }
-                            mostrarDialogoInspeccion( list_inspeccion );
-                            break;
-                        case "EMPTY":
-                            new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Inspección", getString(R.string.txt_msg_inspeccion_vacios), true);
-                            break;
-                        default:
-                            String fch = sdf.format( Calendar.getInstance().getTime() );
-                            new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Conexión", fch+"\n"+getString(R.string.txt_msg_error_consulta), true);
-                            Log.e("IRTask-Error", "Estado:" + estado + ",msg:" + result.getString("msg") + ",cod:" + result.getString("code"));
-                            break;
-                    }
-                }else if( estado_ce.equals("ERROR") )
-                {
-                    if( result.getInt("code") == 102 ) //Tiempo de consulta superado
-                    {
-                        String fch = sdf.format( Calendar.getInstance().getTime() );
-                        new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error", fch+"\n"+getString(R.string.txt_msg_error_tiempo_conexion), true);
-                    }else{
-                        String fch = sdf.format( Calendar.getInstance().getTime() );
-                        new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Error", fch+"\n"+getString(R.string.txt_msg_error_consulta), true);
-                    }
-                }
-                progreso.cancel();
-            }catch ( JSONException e )
-            {
-                progreso.cancel();
-                Log.e("AA-JSONException", e.toString());
-            }
-        }
-    }//ConsultarDatosInspeccionTask
-
-    /**
      * Clase encargada de realizar el proceso de registrar la inspección previa en la BDD
      * */
     private class RegistrarInspeccionTask extends AsyncTask<String, Void, JSONObject>
@@ -1928,9 +1955,7 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                     if( estado.equals("OK") )
                     {
                         //Registrar fecha de la inspeccion
-                        String fch_actual = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
-                        GlobalParametrosGenerales parametros = (GlobalParametrosGenerales) getApplicationContext();
-                        parametros.setFecha_inspeccion( fch_actual );
+                        actualizarFechaInspeccionSharedPreferences();
                         cambiarInicioRuta(2);
                         alert.dismiss();
                         new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, getString(R.string.txt_inspeccion), getString(R.string.txt_registro_inspeccion_ok), true);
@@ -2048,7 +2073,14 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                     {
                         case "OK":
                             JSONArray pdvs = result.getJSONArray("pdv");
-                            cargarListaPDV( pdvs );
+                            ArrayList<PDV> arrayPDVs = new ArrayList<>();
+                            for( int i=0; i < pdvs.length(); i++ )
+                            {
+                                PDV rutaAlumno = crearPDVRuta( pdvs.getJSONObject(i) );
+                                arrayPDVs.add( rutaAlumno );
+                            }
+                            mostrarListaPDV( arrayPDVs );
+                            validarOUTsFinalRuta( arrayPDVs );
                             break;
                         case "EMPTY":
                             new Utilidades().mostrarSimpleMensaje(PrincipalActivity.this, "Lista PDV", getString(R.string.txt_msg_lista_pdv_vacia), true);
@@ -2249,6 +2281,10 @@ public class PrincipalActivity extends AppCompatActivity implements ServiceConne
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.clear();
                 editor.apply();
+
+                //Limpiar la base de datos local
+                new DatabaseHelper( getApplicationContext() ).logout();
+
                 Intent intent = new Intent(PrincipalActivity.this, LoginActivity.class );
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 if (Build.VERSION.SDK_INT >= 11) {

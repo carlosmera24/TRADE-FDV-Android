@@ -396,7 +396,8 @@ public class LoginActivity extends AppCompatActivity
                                         result.getString("id_ruta"),
                                         result.getString("nombre") + " " + result.getString("apellido"),
                                         result.getString("token"),
-                                        result.getString("imagen")
+                                        result.getString("imagen"),
+                                        result.getString("empresa")
                                 );
 
                                 long id = new DatabaseHelper( getApplicationContext() ).setUsuario( usuario );
