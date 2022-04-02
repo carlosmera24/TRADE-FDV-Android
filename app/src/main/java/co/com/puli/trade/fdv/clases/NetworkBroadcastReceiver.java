@@ -448,7 +448,7 @@ public class NetworkBroadcastReceiver extends BroadcastReceiver
                 }
             }
             postParam.put("fecha", fecha);
-            postParam.put("id_vehiculo", id_fdv);
+            postParam.put("id_fdv", id_fdv);
             postParam.put("inspeccion", array.toString());
         }
 
@@ -573,12 +573,12 @@ public class NetworkBroadcastReceiver extends BroadcastReceiver
         public RegistrarCheckTask(MvtoCheck mvtoCheck, Context context) {
             this.mvtoCheck = mvtoCheck;
             this.context = context;
-            postParam.put("fecha", mvtoCheck.getFecha());
-            postParam.put("id_pdv", mvtoCheck.getId_pdv() );
-            postParam.put("id_fdv", mvtoCheck.getId_fdv() );
-            postParam.put("tipo_checkin", ""+ mvtoCheck.getTipo_checkin());
             postParam.put("lat", "" + mvtoCheck.getLat());
             postParam.put("lng", "" + mvtoCheck.getLng());
+            postParam.put("id_fdv", mvtoCheck.getId_fdv() );
+            postParam.put("id_pdv", mvtoCheck.getId_pdv() );
+            postParam.put("tipo_checkin", ""+ mvtoCheck.getTipo_checkin());
+            postParam.put("fecha", mvtoCheck.getFecha());
         }
 
         @Override
