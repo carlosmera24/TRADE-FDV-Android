@@ -38,6 +38,7 @@ import co.com.puli.trade.fdv.clases.CustomFonts;
 import co.com.puli.trade.fdv.clases.GlobalParametrosGenerales;
 import co.com.puli.trade.fdv.clases.ImageBitMap;
 import co.com.puli.trade.fdv.clases.Utilidades;
+import co.com.puli.trade.fdv.database.DatabaseHelper;
 
 
 public class PuntoOportunidadActivity extends AppCompatActivity {
@@ -177,23 +178,7 @@ public class PuntoOportunidadActivity extends AppCompatActivity {
      * */
     public String getNombreEmpresa()
     {
-        try {
-            GlobalParametrosGenerales parametros = (GlobalParametrosGenerales) getApplicationContext();
-            JSONObject empresa = parametros.getEmpresa();
-            if (empresa != null) {
-                return empresa.getString("nombre");
-            }else{
-                return null;
-            }
-        }catch( JSONException e )
-        {
-            Log.e("JSONException","PDVRutaAdapter.getNombreColegio.JSONException:"+ e.toString() );
-            return null;
-        }catch(Exception e )
-        {
-            Log.e("Exception","PDVRutaAdapter.getNombreColegio.Exception:"+ e.toString() );
-            return null;
-        }
+        return new DatabaseHelper( getApplicationContext() ).getUsuario().getEmpresa();
     }
 
     /**

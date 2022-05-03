@@ -269,5 +269,21 @@
     <string name="content_finshed_update_server">Se actualizaron {number} registros en el servidor</string>
     <string name="content_small_finshed_update_server">Actualización de datos en el servidor finalizada.}</string>
     <string name="txt_msg_error_insert_database_check">Lo sentimos, ocurrió un problema al registrar el Check en la base de datos local.</string>
+    <string name="txt_chat_usuarios">CHAT USUARIOS</string>
+    <string name="txt_registro">REGISTRO</string>
+    <string name="txt_update_password">ACTUALIZAR CONTRASEÑA</string>
+    <string name="title_mensajes">MENSAJES</string>
+    <string name="title_alertas">ALERTAS</string>
+    <string name="title_active_pause">PAUSA ACTIVA</string>
+    <string name="title_fuec_request">SOLICITUD FUEC</string>
+    <string name="title_shedule">AGENDAMIENTO</string>
+    <string name="title_post_control">CONTROL PDV</string>
+    <string name="title_new_pdv">NUEVO PDV</string>
+    <string name="title_orders_pdv">PEDIDOS PDV</string>
+    <string name="title_concursos">CONCURSOS</string>
+    <string name="title_punto_oportunidad">PUNTO DE OPORTUNIDAD</string>
+    <string name="title_my_orders">MIS PEDIDOS</string>
+    <string name="title_oder_details">DETALLE PEDIDO</string>
+    <string name="title_notifications">NOTIFICACIONES</string>
 
 </resources>

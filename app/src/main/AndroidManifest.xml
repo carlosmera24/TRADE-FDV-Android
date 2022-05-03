@@ -93,74 +93,74 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.MensajesActivity"
-            android:label="MENSAJES"
+            android:label="@string/title_mensajes"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.AlertasActivity"
-            android:label="ALERTAS"
+            android:label="@string/title_alertas"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.ChatActivity"
-            android:label="CHAT"
+            android:label="@string/title_chat"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.ChatUsuariosActivity"
-            android:label="CHAT USUARIOS"
+            android:label="@string/txt_chat_usuarios"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.RegistroActivity"
-            android:label="REGISTRO"
+            android:label="@string/txt_registro"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.CambiarPasswordActivity"
-            android:label="ACTUALIZAR CONTRASEÑA"
+            android:label="@string/txt_update_password"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.PausaActivaActivity"
-            android:label="PAUSA ACTIVA"
+            android:label="@string/title_active_pause"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.FUEC_RegistroActivity"
-            android:label="SOLICITUD FUEC"
+            android:label="@string/title_fuec_request"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.AgendamientoActivity"
-            android:label="AGENDAMIENTO"
+            android:label="@string/title_shedule"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.ControlPDVActivity"
-            android:label="CONTROL PDV"
+            android:label="@string/title_post_control"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.NuevoPDVActivity"
-            android:label="NUEVO PDV"
+            android:label="@string/title_new_pdv"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.NuevoPedidoActivity"
-            android:label="PEDIDOS PDV"
+            android:label="@string/title_orders_pdv"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.ListadoConcursosActivity"
-            android:label="CONCURSOS"
+            android:label="@string/title_concursos"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.ConcursoActivity"
-            android:label="CONCURSO"
+            android:label="@string/title_concursos"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.PuntoOportunidadActivity"
-            android:label="PUNTO DE OPORTUNIDAD"
+            android:label="@string/title_punto_oportunidad"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.MisPedidosActivity"
-            android:label="MIS PEDIDOS"
+            android:label="@string/title_my_orders"
             android:screenOrientation="portrait" />
         <activity
             android:name=".actividades.DetallePedidoActivity"
-            android:label="DETALLE PEDIDO"
+            android:label="@string/title_oder_details"
             android:screenOrientation="portrait" />
         <activity android:name=".actividades.NotificacionesActivity"
-            android:label="NOTIFICACIONES"
+            android:label="@string/title_notifications"
             android:screenOrientation="portrait" />
     </application>
 
